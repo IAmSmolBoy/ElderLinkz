@@ -1,6 +1,12 @@
 import 'package:elderlinkz/classes/colors.dart';
+import 'package:elderlinkz/screens/home%20copy%202.dart';
+import 'package:elderlinkz/screens/home%20copy%203.dart';
+import 'package:elderlinkz/screens/home%20copy.dart';
 import 'package:elderlinkz/screens/home.dart';
 import 'package:elderlinkz/test.dart';
+import 'package:elderlinkz/test_overlay.dart';
+import 'package:elderlinkz/widgets/bottom_navbar.dart';
+import 'package:elderlinkz/widgets/top_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
@@ -26,21 +32,23 @@ Future<void> main() async {
 
 // ---------------- Themes ----------------
 final light = ThemeData(
+  scaffoldBackgroundColor: Colors.white,
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
     primary: AppColors.primaryBlue,
     onPrimary: Colors.white,
     secondary: AppColors.primaryDarkBlue,
     onSecondary: Colors.white,
-    error: AppColors.primaryRed,
+    error: Color.fromARGB(255, 102, 30, 30),
     onError: Colors.white,
     background: Colors.white,
     onBackground: AppColors.primaryBlack,
-    surface: Colors.white,
-    onSurface: AppColors.primaryBlack,
+    surface: AppColors.primaryLightBlue,
+    onSurface: AppColors.primaryDarkBlue,
   )
 );
 final dark = ThemeData(
+  scaffoldBackgroundColor: AppColors.primaryBlack,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
     primary: AppColors.primaryBlue,
@@ -51,8 +59,8 @@ final dark = ThemeData(
     onError: Colors.white,
     background: AppColors.primaryBlack,
     onBackground: Colors.white,
-    surface: AppColors.primaryBlack,
-    onSurface: Colors.white,
+    surface: AppColors.primaryDarkBlue,
+    onSurface: AppColors.primaryLightBlue,
   )
 );
 
@@ -78,12 +86,52 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int currentIndex = 0;
+  List<Widget> tabs = const [
+    Home(),
+    Screen2(),
+    Screen3(),
+    Screen4()
+  ];
+
+  setBottomBarIndex(int index) {
+    if (index != _tabController.index) {
+      _tabController.animateTo(index);
+    }
+
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
+  @override
+  void initState() {
+    _tabController = TabController(length: tabs.length, vsync: this);
+    _tabController.addListener(() { setBottomBarIndex(_tabController.index); });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: TestWidget(),
+      appBar: const TopNavbar(title: "Home",),
+      bottomNavigationBar: BottomNavbar(currentIndex: currentIndex, setBottomBarIndex: setBottomBarIndex),
+      body: DefaultTabController(
+        length: tabs.length,
+        child: TabBarView(
+          controller: _tabController,
+          children: tabs
+        ),
+      ),
     );
   }
 }

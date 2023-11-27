@@ -15,16 +15,16 @@ class _TestWidgetState extends State<TestWidget> {
   void initState() {
     super.initState();
 
-    mqttHandler = MqttHandler({}, serverUrl: '10.0.2.2', clientIdentifier: 'frontend', portNumber: 1883);
+    // mqttHandler = MqttHandler({}, serverUrl: '10.0.2.2', clientIdentifier: 'frontend', portNumber: 1883);
 
-    mqttHandler
-      .connect()
-      .then((error) {
-        if (error != true) {
-          print("subscribing");
-          mqttHandler.subscribe("test");
-        }
-    });
+    // mqttHandler
+    //   .connect()
+    //   .then((error) {
+    //     if (error != true) {
+    //       print("subscribing");
+    //       mqttHandler.subscribe("test");
+    //     }
+    // });
   }
 
   @override
