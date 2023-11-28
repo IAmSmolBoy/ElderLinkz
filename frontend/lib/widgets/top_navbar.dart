@@ -1,4 +1,3 @@
-import 'package:elderlinkz/classes/colors.dart';
 import 'package:flutter/material.dart';
 
 class TopNavbar extends StatefulWidget implements PreferredSizeWidget {
@@ -27,7 +26,7 @@ class _TopNavbarState extends State<TopNavbar> {
       backgroundColor: colorScheme.surface,
       leading: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          return Container(height: constraints.maxHeight, width: constraints.maxHeight);
+          return SizedBox(height: constraints.maxHeight, width: constraints.maxHeight);
         }
       ),
       title: Text(

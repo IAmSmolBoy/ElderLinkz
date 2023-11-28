@@ -23,6 +23,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     final ColorScheme colorScheme = theme.colorScheme;
 
     return Container(
+      color: Colors.transparent,
       width: size.width,
       height: 80,
       child: Stack(
@@ -43,6 +44,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
             ),
           ),
           Container(
+            color: Colors.transparent,
             width: size.width,
             height: 80,
             child: Row(
@@ -62,7 +64,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                 ),
                 IconButton(
                   icon: Icon(
-                    Icons.restaurant_menu,
+                    Icons.person,
                     color: widget.currentIndex == 1
                         ? colorScheme.primary
                         : colorScheme.onSurface,
@@ -72,6 +74,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   }
                 ),
                 Container(
+                  color: Colors.transparent,
                   width: size.width * 0.20,
                 ),
                 IconButton(

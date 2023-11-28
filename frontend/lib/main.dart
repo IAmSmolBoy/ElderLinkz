@@ -1,10 +1,8 @@
 import 'package:elderlinkz/classes/colors.dart';
 import 'package:elderlinkz/screens/home%20copy%202.dart';
 import 'package:elderlinkz/screens/home%20copy%203.dart';
-import 'package:elderlinkz/screens/home%20copy.dart';
+import 'package:elderlinkz/screens/patients_screen.dart';
 import 'package:elderlinkz/screens/home.dart';
-import 'package:elderlinkz/test.dart';
-import 'package:elderlinkz/test_overlay.dart';
 import 'package:elderlinkz/widgets/bottom_navbar.dart';
 import 'package:elderlinkz/widgets/top_navbar.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   int currentIndex = 0;
   List<Widget> tabs = const [
     Home(),
-    Screen2(),
+    PatientsScreen(),
     Screen3(),
     Screen4()
   ];
@@ -121,6 +119,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+
+    // return Scaffold(
+    //   body: TestContact(),
+    // );
 
     return Scaffold(
       appBar: const TopNavbar(title: "Home",),
