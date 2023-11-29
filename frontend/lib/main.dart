@@ -1,17 +1,26 @@
 import 'package:elderlinkz/classes/colors.dart';
-import 'package:elderlinkz/screens/home%20copy%202.dart';
+import 'package:elderlinkz/classes/navbar_selected.dart';
+import 'package:elderlinkz/classes/theme.dart';
+import 'package:elderlinkz/screens/analytics_screen.dart';
 import 'package:elderlinkz/screens/home%20copy%203.dart';
 import 'package:elderlinkz/screens/patients_screen.dart';
 import 'package:elderlinkz/screens/home.dart';
-import 'package:elderlinkz/widgets/bottom_navbar.dart';
-import 'package:elderlinkz/widgets/top_navbar.dart';
+import 'package:elderlinkz/widgets/layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+late SharedPreferences prefs;
+ThemeMode theme = ThemeMode.system;
 
 // Initialisation
 Future<void> init() async {
-  
+  prefs = await SharedPreferences.getInstance();
+
+  theme = (prefs.getBool("lightMode") ?? true) ?
+    ThemeMode.light :
+    ThemeMode.dark;
 }
 
 Future<void> main() async {
@@ -67,73 +76,71 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Flutter Demo',
-      themeMode: ThemeMode.light,
-      theme: light,
-      darkTheme: dark,
-      home: const MyHomePage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider( create: (context) => ThemeProvider(), ),
+        ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
+      ],
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          themeMode: context.watch<ThemeProvider>().themeMode,
+          theme: light,
+          darkTheme: dark,
+          home: const TabManager(),
+        );
+      },
     );
   }
 }
+  
+late TabController tabController;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({ super.key });
+class TabManager extends StatefulWidget {
+  const TabManager({ super.key });
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<TabManager> createState() => _TabManagerState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _TabManagerState extends State<TabManager> with SingleTickerProviderStateMixin {
   int currentIndex = 0;
   List<Widget> tabs = const [
     Home(),
     PatientsScreen(),
-    Screen3(),
+    AnalyticsScreen(),
     Screen4()
   ];
 
-  setBottomBarIndex(int index) {
-    if (index != _tabController.index) {
-      _tabController.animateTo(index);
-    }
-
-    setState(() {
-      currentIndex = index;
-    });
-  }
-
   @override
   void initState() {
-    _tabController = TabController(length: tabs.length, vsync: this);
-    _tabController.addListener(() { setBottomBarIndex(_tabController.index); });
+    tabController = TabController(length: tabs.length, vsync: this);
     super.initState();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
 
+    tabController.addListener(() { context.read<NavbarSelected>().setSelected(tabController.index); });
+
     // return Scaffold(
     //   body: TestContact(),
     // );
 
-    return Scaffold(
-      appBar: const TopNavbar(title: "Home",),
-      bottomNavigationBar: BottomNavbar(currentIndex: currentIndex, setBottomBarIndex: setBottomBarIndex),
+    return Layout(
       body: DefaultTabController(
         length: tabs.length,
         child: TabBarView(
-          controller: _tabController,
+          controller: tabController,
           children: tabs
         ),
-      ),
+      )
     );
   }
 }
