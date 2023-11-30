@@ -4,6 +4,7 @@ from paho.mqtt.client import MQTTMessage
 
 from connections.mqtt import connect_mqtt
 from connections.sql import connect_sql
+from connections.opcua_client import connect_opcua, set_var
 
 load_dotenv()
 
@@ -31,6 +32,16 @@ CONNECTION_STR = (
     f"Trusted_Connection={os.getenv('SQL_AUTH')};"
 ) # connection string for sql driver
 
+# OPCUA variables
+OPCUA_ENDPOINT = os.getenv('OPCUA_ENDPOINT')
+NODEIDS = [
+    { 'name': 'temperature','nodeId': 'ns=2;i=2', },
+    { 'name': 'happy','nodeId': 'ns=2;i=3', },
+    { 'name': 'oxygen','nodeId': 'ns=2;i=4', },
+    { 'name': 'heart','nodeId': 'ns=2;i=5', },
+]
+
+
 
 
 
@@ -40,6 +51,9 @@ if __name__ == '__main__':
 
     # Connect to sql
     sqlConnection = connect_sql(CONNECTION_STR)
+
+    # connect to OPCUA
+    opcuaClient = connect_opcua(OPCUA_ENDPOINT)
 
     # Get cursor to execute SQL queries
     sql = sqlConnection.cursor()
@@ -65,6 +79,12 @@ if __name__ == '__main__':
             # sql.execute(f"INSERT INTO readings ({','.join(data.keys())})"
             #             f"VALUES ({','.join(data.values())});")
             # sqlConnection.commit()
+
+            for i, nodeId in enumerate(NODEIDS):
+                var = opcuaClient.get_node(nodeId['nodeId'])
+
+                var.set_value(data[nodeId['name']])
+
             print(data)
 
             data = {}

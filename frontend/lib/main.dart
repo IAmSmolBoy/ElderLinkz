@@ -1,6 +1,7 @@
 import 'package:elderlinkz/classes/colors.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/theme.dart';
+import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/analytics_screen.dart';
 import 'package:elderlinkz/screens/home%20copy%203.dart';
 import 'package:elderlinkz/screens/patients_screen.dart';
@@ -11,16 +12,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-late SharedPreferences prefs;
-ThemeMode theme = ThemeMode.system;
-
 // Initialisation
 Future<void> init() async {
   prefs = await SharedPreferences.getInstance();
-
-  theme = (prefs.getBool("lightMode") ?? true) ?
-    ThemeMode.light :
-    ThemeMode.dark;
 }
 
 Future<void> main() async {
@@ -82,6 +76,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
       ],
       builder: (context, child) {
+
+        context
+          .read<ThemeProvider>()
+          .setThemeMode(
+            newTheme: (prefs.getBool("lightMode") ?? true) ?
+              ThemeMode.light :
+              ThemeMode.dark
+          );
+
         return MaterialApp(
           title: 'Flutter Demo',
           themeMode: context.watch<ThemeProvider>().themeMode,

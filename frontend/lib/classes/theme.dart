@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:elderlinkz/globals.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode;
@@ -7,6 +8,9 @@ class ThemeProvider extends ChangeNotifier {
 
   void setThemeMode({ required ThemeMode newTheme }) async {
     themeMode = newTheme;
+
+    prefs.setBool("lightMode", newTheme == ThemeMode.light);
+
     notifyListeners();
   }
 
