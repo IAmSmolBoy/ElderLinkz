@@ -35,7 +35,7 @@ class OpcuaServer:
         node: Node = self.objectNode.add_variable(self.namespaceID, varName, value)
         node.set_writable()
 
-        print(node.nodeid)
+        # print(node.nodeid)
 
         self.variables.append(node)
 
