@@ -1,4 +1,5 @@
 import 'package:elderlinkz/classes/navbar_selected.dart';
+import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/widgets/bottom_navbar.dart';
 import 'package:elderlinkz/widgets/top_navbar.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +7,13 @@ import 'package:provider/provider.dart';
 
 class Layout extends StatefulWidget {
   final Widget body;
+  final String title;
   final bool bottomNavbar;
 
   const Layout({
     super.key,
     required this.body,
+    required this.title,
     this.bottomNavbar = true
   });
 
@@ -23,6 +26,14 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
 
+    void setSelected(int newIndex) {
+      if (newIndex != tabController.index) {
+        tabController.animateTo(newIndex);
+      }
+
+      context.read<NavbarSelected>().setSelected(newIndex);
+    }
+
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     // return Scaffold(
@@ -31,7 +42,10 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
 
     return Scaffold(
       body: widget.body,
-      appBar: const TopNavbar(title: "Home",),
+      resizeToAvoidBottomInset: false,
+      appBar: TopNavbar(title: widget.title,),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      backgroundColor: colorScheme.background,
       bottomNavigationBar: widget.bottomNavbar ?
         const BottomNavbar() :
         null,
@@ -39,15 +53,14 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         FloatingActionButton(
           backgroundColor: colorScheme.primary,
           onPressed: () {
-            context.read<NavbarSelected>().setSelected(3);
+            setSelected(5);
           },
           child: const Icon(
-            Icons.add,
-            size: 25,
+            Icons.search,
+            size: 25, 
           )
         ) :
         null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
     );
   }
 }

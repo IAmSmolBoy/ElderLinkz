@@ -1,13 +1,25 @@
-import 'package:elderlinkz/classes/patient.dart';
-import 'package:elderlinkz/globals.dart';
+import 'package:elderlinkz/classes/ward_data.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:provider/provider.dart';
 
 class PatientsScreen extends StatelessWidget {
   const PatientsScreen({ super.key });
 
+  
+
   @override
   Widget build(BuildContext context) {
+
+    // Get Screen Size
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    // Get patient list from all wards
+    List<List<Patient>> wardPatientList = context.read<WardList>().wardList.map((ward) => ward.patients).toList();
+
+    // Flatten list to be a list of all patients
+    List<Patient> patients = wardPatientList.expand((e) => e,).toList();
+
     return SafeArea(
       child: ListView(
         children: [
@@ -53,9 +65,9 @@ class PatientsScreen extends StatelessWidget {
                       //   })
                       // );
                     },
-                    leading: const CircleAvatar(
+                    leading: CircleAvatar(
                       radius: 25,
-                      // backgroundImage: AssetImage('assets/person_1.png'),
+                      backgroundColor: colorScheme.onBackground
                     ),
                     title: Text(
                       '${element.name}',

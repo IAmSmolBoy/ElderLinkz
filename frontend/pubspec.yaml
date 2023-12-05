@@ -45,6 +45,7 @@ dependencies:
   provider: ^6.1.1
   settings_ui: ^2.0.2
   page_transition: "^2.0.9"
+  flutter_login: ^4.2.1
 
 dev_dependencies:
   flutter_test:
@@ -100,23 +101,23 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
 
-  # assets:
-  #   - .env
+  assets:
+    - assets/images/
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/ElderlinkZLOGO Inverted.png
+  image: assets/images/Elderlinkz Logo.png
 
   android: true
   ios: true
   web: false
 
   android_12:
-    image: assets/ElderlinkZ icon.png
+    image: assets/images/ElderlinkZ icon.png
 
 flutter_launcher_icons:
   adaptive_icon_background: "#ffffff"
-  image_path: "assets/Launcher Icon.png"
+  image_path: "assets/images/Launcher Icon.png"
 
   android: true
   ios: true

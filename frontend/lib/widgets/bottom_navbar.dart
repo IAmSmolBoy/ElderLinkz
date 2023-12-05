@@ -1,6 +1,6 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
-import 'package:elderlinkz/main.dart';
+import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,20 +22,16 @@ class _BottomNavbarState extends State<BottomNavbar> {
   @override
   Widget build(BuildContext context) {
 
-    void setSelected(int newIndex) {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
+    ThemeData theme = Theme.of(context);
+    ColorScheme colorScheme = theme.colorScheme;
 
+    void setSelected(int newIndex) {
       if (newIndex != tabController.index) {
         tabController.animateTo(newIndex);
       }
 
       context.read<NavbarSelected>().setSelected(newIndex);
     }
-
-    ThemeData theme = Theme.of(context);
-    ColorScheme colorScheme = theme.colorScheme;
 
     return AnimatedBottomNavigationBar(
       backgroundColor: colorScheme.surface,

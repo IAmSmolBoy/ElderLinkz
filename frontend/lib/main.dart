@@ -1,12 +1,10 @@
 import 'package:elderlinkz/classes/colors.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/theme.dart';
+import 'package:elderlinkz/classes/ward_data.dart';
 import 'package:elderlinkz/globals.dart';
-import 'package:elderlinkz/screens/analytics_screen.dart';
-import 'package:elderlinkz/screens/home%20copy%203.dart';
-import 'package:elderlinkz/screens/patients_screen.dart';
-import 'package:elderlinkz/screens/home.dart';
-import 'package:elderlinkz/widgets/layout.dart';
+import 'package:elderlinkz/screens/login_page.dart';
+import 'package:elderlinkz/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +30,7 @@ Future<void> main() async {
 }
 
 // ---------------- Themes ----------------
-final light = ThemeData(
+final lightTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   colorScheme: const ColorScheme(
     brightness: Brightness.light,
@@ -48,7 +46,7 @@ final light = ThemeData(
     onSurface: AppColors.primaryDarkBlue,
   )
 );
-final dark = ThemeData(
+final darkTheme = ThemeData(
   scaffoldBackgroundColor: AppColors.primaryBlack,
   colorScheme: const ColorScheme(
     brightness: Brightness.dark,
@@ -65,6 +63,32 @@ final dark = ThemeData(
   )
 );
 
+
+  const List<WardData> wards = [
+    WardData(
+      id: 1,
+      patients: [
+        Patient(name: "Rui Dong", room: 1, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(name: "Robby", room: 1, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(name: "Hong Rui", room: 2, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+      ]
+    ),
+    WardData(
+      id: 2,
+      patients: [
+        Patient(name: "Xing Xiao", room: 2, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(name: "Raphael", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+      ]
+    ),
+    WardData(
+      id: 3,
+      patients: [
+        Patient(name: "James", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(name: "Frederick", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+      ]
+    ),
+  ];
+
 class MyApp extends StatelessWidget {
   const MyApp({ super.key });
 
@@ -72,78 +96,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider( create: (context) => ThemeProvider(), ),
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
-      ],
-      builder: (context, child) {
-
-        context
-          .read<ThemeProvider>()
-          .setThemeMode(
-            newTheme: (prefs.getBool("lightMode") ?? true) ?
+        ChangeNotifierProvider( create: (context) => WardList(wardList: wards), ),
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(
+            themeMode: (prefs.getBool("lightMode") ?? true) ?
               ThemeMode.light :
               ThemeMode.dark
-          );
+            ),
+        ),
+      ],
+      builder: (context, child) {
 
         return MaterialApp(
           title: 'Flutter Demo',
           themeMode: context.watch<ThemeProvider>().themeMode,
-          theme: light,
-          darkTheme: dark,
-          home: const TabManager(),
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          initialRoute: '/tabs',
+          routes: {
+            '/login': (context) => const LoginPage(),
+            '/tabs': (context) => const TabManager(),
+          },
         );
       },
-    );
-  }
-}
-  
-late TabController tabController;
-
-class TabManager extends StatefulWidget {
-  const TabManager({ super.key });
-
-  @override
-  State<TabManager> createState() => _TabManagerState();
-}
-
-class _TabManagerState extends State<TabManager> with SingleTickerProviderStateMixin {
-  int currentIndex = 0;
-  List<Widget> tabs = const [
-    Home(),
-    PatientsScreen(),
-    AnalyticsScreen(),
-    Screen4()
-  ];
-
-  @override
-  void initState() {
-    tabController = TabController(length: tabs.length, vsync: this);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    tabController.addListener(() { context.read<NavbarSelected>().setSelected(tabController.index); });
-
-    // return Scaffold(
-    //   body: TestContact(),
-    // );
-
-    return Layout(
-      body: DefaultTabController(
-        length: tabs.length,
-        child: TabBarView(
-          controller: tabController,
-          children: tabs
-        ),
-      )
     );
   }
 }
