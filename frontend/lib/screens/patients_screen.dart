@@ -73,7 +73,7 @@ class PatientsScreen extends StatelessWidget {
                       '${element.name}',
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                    subtitle: Text('Room ${element.room}'),
+                    subtitle: Text('Room ${element.ward}'),
                   ),
                   const Divider(
                     indent: 25,

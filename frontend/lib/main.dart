@@ -64,27 +64,125 @@ final darkTheme = ThemeData(
 );
 
 
-  const List<WardData> wards = [
+  List<WardData> wards = [
     WardData(
       id: 1,
       patients: [
-        Patient(name: "Rui Dong", room: 1, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
-        Patient(name: "Robby", room: 1, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
-        Patient(name: "Hong Rui", room: 2, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(
+          name: "Rui Dong",
+          ic: "S0123456C",
+          race: "Chinese",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 60,
+          ward: 1,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
+        Patient(
+          name: "Robby",
+          ic: "S1234567C",
+          race: "Chinese",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 61,
+          ward: 1,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
+        Patient(
+          name: "Hong Rui",
+          ic: "S2345678C",
+          race: "Chinese",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 62,
+          ward: 1,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
       ]
     ),
     WardData(
       id: 2,
       patients: [
-        Patient(name: "Xing Xiao", room: 2, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
-        Patient(name: "Raphael", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(
+          name: "Xing Xiao",
+          ic: "S3456789C",
+          race: "Chinese",
+          emergencyContact: "+6567773777",
+          gender: "Female",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 63,
+          ward: 2,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
+        Patient(
+          name: "Raphael",
+          ic: "S4567890C",
+          race: "Chinese",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 64,
+          ward: 2,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
       ]
     ),
     WardData(
       id: 3,
       patients: [
-        Patient(name: "James", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
-        Patient(name: "Frederick", room: 3, oxygen: 0.0, heartRate: 0.0, gsr: 0.0, humidity: 0.0, temperature: 0.0),
+        Patient(
+          name: "Jan Gabriel",
+          ic: "S5678901C",
+          race: "Filipino",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 65,
+          ward: 3,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
+        Patient(
+          name: "Frederick",
+          ic: "S6789012C",
+          race: "Filipino",
+          emergencyContact: "+6567773777",
+          gender: "Male",
+          dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
+          age: 66,
+          ward: 3,
+          oxygen: 0.0,
+          heartRate: 0.0,
+          gsr: 0.0,
+          humidity: 0.0,
+          temperature: 0.0
+        ),
       ]
     ),
   ];
