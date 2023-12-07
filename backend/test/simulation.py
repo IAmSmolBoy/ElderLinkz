@@ -17,14 +17,6 @@ RECONNECT_RATE = 2
 MAX_RECONNECT_COUNT = 12
 MAX_RECONNECT_DELAY = 60
 
-# simulation topics
-TOPICS = [
-    "temperature",
-    "happy",
-    "oxygen",
-    "heart"
-]
-
 def on_disconnect(client: mqtt_client.Client, userdata, rc):
     print("Disconnected with result code: %s", rc)
     reconnect_count, reconnect_delay = 0, FIRST_RECONNECT_DELAY
@@ -68,7 +60,7 @@ client = connect_mqtt()
 while True:
 
     client.publish("temperature", random.random() * 5 + 35)
-    client.publish("happy", random.randint(0, 40))
+    client.publish("gsr", random.randint(0, 40))
     client.publish("oxygen", random.randint(87, 100))
     client.publish("heart", random.randint(60, 180))
     # print("publish")

@@ -16,7 +16,7 @@ load_dotenv()
 
 TOPICS = [
     "temperature",
-    "happy",
+    "gsr",
     "oxygen",
     "heart"
 ] # simulation topics (If you have more values add here)
@@ -38,7 +38,7 @@ CONNECTION_STR = (
 OPCUA_ENDPOINT = os.getenv('OPCUA_ENDPOINT')
 NODEIDS = [
     { 'name': 'temperature','nodeId': 'ns=2;i=2' },
-    { 'name': 'happy','nodeId': 'ns=2;i=3' },
+    { 'name': 'gsr','nodeId': 'ns=2;i=3' },
     { 'name': 'oxygen','nodeId': 'ns=2;i=4' },
     { 'name': 'heart','nodeId': 'ns=2;i=5' },
 ]
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     print('\n------------------------------ Ping Testing to Web Server ------------------------------')
     print('ping', end=' ')
-    print(http.get('/ping').json()['msg'], '\n\n')
+    print(http.get('/ping').json()['message'], '\n\n')
 
     # MQTT on_message function
     def on_message(client, userdata, msg: MQTTMessage):

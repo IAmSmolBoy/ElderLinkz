@@ -8,7 +8,7 @@ OBJECT_NAME = os.getenv('OBJECT_NAME')
 
 VARIABLES = [
     "temperature",
-    "happy",
+    "gsr",
     "oxygen",
     "heart",
 ]
