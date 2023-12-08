@@ -2,6 +2,7 @@ import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/screens/patient_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class PatientsScreen extends StatelessWidget {
@@ -51,11 +52,10 @@ class PatientsScreen extends StatelessWidget {
                   ListTile(
                     onTap: () {
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                          return PatientDetailsScreen(
-                            patient: patient
-                          );
-                        })
+                        PageTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: PatientDetailsScreen(patient: patient),
+                        )
                       );
                     },
                     leading: CircleAvatar(

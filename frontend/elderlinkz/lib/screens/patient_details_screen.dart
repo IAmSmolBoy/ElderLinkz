@@ -1,8 +1,9 @@
 import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/widgets/details_card.dart';
 import 'package:elderlinkz/widgets/layout.dart';
 import 'package:flutter/material.dart';
 
-class PatientDetailsScreen extends StatelessWidget {
+class PatientDetailsScreen extends StatefulWidget {
   const PatientDetailsScreen({
     super.key,
     required this.patient
@@ -11,116 +12,131 @@ class PatientDetailsScreen extends StatelessWidget {
   final Patient patient;
 
   @override
+  State<PatientDetailsScreen> createState() => _PatientDetailsScreenState();
+}
+
+class _PatientDetailsScreenState extends State<PatientDetailsScreen> with TickerProviderStateMixin {
+
+  late TabController _tabController;
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(
+      initialIndex: 0,
+      length: 2,
+      vsync: this,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    Size screenSize = MediaQuery.of(context).size;
 
     return Layout(
-      title: patient.name,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 50,),
-            CircleAvatar(
-              minRadius: 100,
-              backgroundColor: colorScheme.onBackground,
-              child: Icon(Icons.person,
-                size: 100,
-                color: colorScheme.background,
-              ),
-            ),
-            const SizedBox(height: 50,),
-            Row(
+      title: widget.patient.name,
+      body: Stack(
+        children: [
+          Positioned(
+            width: screenSize.width,
+            top: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(width: 30,),
-                Text("Status",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onBackground,
+                CircleAvatar(
+                  minRadius: 75,
+                  backgroundColor: colorScheme.onBackground,
+                  child: Icon(Icons.person,
+                    size: 100,
+                    color: colorScheme.background,
                   ),
                 ),
               ],
             ),
-            ...List
-              .filled(3, 0)
-              .map((e) =>
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ...List
-                          .filled(2, 0)
-                          .map((e) => 
-                            Stack(
-                              children: [
-                                SizedBox(
-                                  height: screenSize.height * .45,
-                                  width: screenSize.width * .45,
-                                  child: Card(
-                                    child: Image.asset(
-                                      'assets/images/Launcher Icon.png',
-                                      fit: BoxFit.fitHeight,
-                                    ),
-                                  ),
+          ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 250,),
+                Container(
+                  color: colorScheme.surface,
+                  child: Column(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: screenSize.height * .65,),
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            DetailsCard(
+                              sectionTitle: "Personal",
+                              sectionWidgets: [
+                                ...displayValueWidget("NRIC", widget.patient.ic, textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Race", widget.patient.race, textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Emergency Contact", widget.patient.emergencyContact, textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Gender", widget.patient.gender, textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Age", widget.patient.age.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Date Of Birth",
+                                  widget.patient.dateOfBirth
+                                    .toString()
+                                    .split(" ")[0]
+                                    .split("-")
+                                    .reversed
+                                    .join("/"),
+                                  textColor: colorScheme.onSecondary
                                 ),
-                                SizedBox(
-                                  height: screenSize.height * .45,
-                                  width: screenSize.width * .45,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        height: screenSize.height * .3,
-                                        width: screenSize.width * .45,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              colorScheme.onBackground.withOpacity(0),
-                                              colorScheme.onBackground.withOpacity(.7),
-                                            ],
-                                          ),
-                                        )
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: screenSize.height * .45,
-                                  width: screenSize.width * .45,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text("Test",
-                                        style: TextStyle(
-                                          fontSize: 36,
-                                          color: colorScheme.background,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10,),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            )
-                          )
-                          .toList()
-                      ],
-                    ),
-                    const SizedBox(height: 20,)
-                  ],
-                )
-              )
-              .toList(),
-            const SizedBox(height: 20,)
-          ],
-        ),
+                              ]
+                            ),
+                            DetailsCard(
+                              sectionTitle: "Health",
+                              sectionWidgets: [
+                                ...displayValueWidget("Ward", widget.patient.ward.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Heart Rate", widget.patient.heartRate.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Temperature", widget.patient.temperature.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Humidity", widget.patient.humidity.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("Oxygen", widget.patient.oxygen.toString(), textColor: colorScheme.onSecondary),
+                                ...displayValueWidget("GSR", widget.patient.gsr.toString(), textColor: colorScheme.onSecondary),
+                              ]
+                            ),
+                          ]
+                        ),
+                      ),
+                      const SizedBox(height: 150,),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+// -------------------------------------------------------------------- Functions --------------------------------------------------------------------
+List<Widget> displayValueWidget(String name, String value, { Color? textColor }) =>
+  [
+    const SizedBox(height: 15,),
+    Text(name,
+      style: TextStyle(
+        fontSize: 15,
+        color: textColor
+      ),
+    ),
+    const SizedBox(height: 2,),
+    Text(value,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: textColor
+      ),
+    ),
+  ];

@@ -1,5 +1,7 @@
 import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/screens/patient_details_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/searchbar.dart';
@@ -86,6 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
         results: results,
         tileColor: colorScheme.surface,
         avatarColor: colorScheme.onBackground,
+        context: context
       ) // Uses patient list to sort into different wards and display in different catagories based on ward number
     ];
 
@@ -132,7 +135,8 @@ Map<int, List<Patient>> categorisePatients(List<Patient> patients) {
 List<Widget> generateListTiles({
    required Color tileColor,
    required Color avatarColor,
-   required Map<int, List<Patient>> results
+   required Map<int, List<Patient>> results,
+   required BuildContext context
 }) {
   return results
     .map((index, result) {
@@ -171,7 +175,12 @@ List<Widget> generateListTiles({
                     ],
                   ),
                   onTap: () {
-              
+                    Navigator.push(context,
+                      PageTransition(
+                        type: PageTransitionType.rightToLeft,
+                        child: PatientDetailsScreen(patient: patient,),
+                      ),
+                    );
                   },
                 ),
               ))
