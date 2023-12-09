@@ -18,7 +18,8 @@ TOPICS = [
     "temperature",
     "gsr",
     "oxygen",
-    "heart"
+    "heart",
+    "humidity"
 ] # simulation topics (If you have more values add here)
 
 # MQTT variables
@@ -41,6 +42,7 @@ NODEIDS = [
     { 'name': 'gsr','nodeId': 'ns=2;i=3' },
     { 'name': 'oxygen','nodeId': 'ns=2;i=4' },
     { 'name': 'heart','nodeId': 'ns=2;i=5' },
+    { 'name': 'humidity','nodeId': 'ns=2;i=6' },
 ]
 
 # HTTP variables

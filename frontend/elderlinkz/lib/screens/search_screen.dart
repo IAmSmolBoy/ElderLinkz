@@ -144,7 +144,7 @@ List<Widget> generateListTiles({
         index,
         [
           Center(
-            child: Text("Ward ${index + 1}",
+            child: Text("Ward $index",
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20

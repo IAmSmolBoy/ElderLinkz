@@ -36,6 +36,7 @@ class _SettingsFormScreenState extends State<SettingsFormScreen> {
       title: widget.settingName,
       bottomNavbar: false,
       settingsButton: false,
+      backButton: true,
       body: SizedBox(
         height: screenSize.height,
         width: screenSize.width,

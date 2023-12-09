@@ -63,6 +63,7 @@ while True:
     client.publish("gsr", random.randint(0, 40))
     client.publish("oxygen", random.randint(87, 100))
     client.publish("heart", random.randint(60, 180))
+    client.publish("humidity", random.randint(90, 120))
     # print("publish")
     
     time.sleep(1)

@@ -25,7 +25,21 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+const { networkInterfaces } = require('os');
+
+const nets = networkInterfaces();
+const ip = "Wi-Fi" in nets ?
+    nets["Wi-Fi"].filter(
+        function (net) {
+            const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+
+            return net.family === familyV4Value
+        }
+    )[0]
+    .address :
+    "127.0.0.1";
+
+server.listen(port, ip);
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -88,5 +102,5 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
   
-  console.log("Listening on http://localhost:" + port)
+  console.log(`Listening on http://${ip}:` + port)
 }

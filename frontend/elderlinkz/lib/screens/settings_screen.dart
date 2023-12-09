@@ -9,10 +9,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsScreen extends StatefulWidget {
 
-  const SettingsScreen({ super.key });
+  const SettingsScreen({
+    super.key,
+    this.loginSettings = false
+  });
+
+  final bool loginSettings;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -30,6 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: "Settings",
       bottomNavbar: false,
       settingsButton: false,
+      backButton: true,
       body: SettingsList(
         lightTheme: SettingsThemeData(
           settingsListBackground: colorScheme.background,
@@ -60,13 +67,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             tiles: [
               SettingsTile.navigation(
                 leading: const Icon(FontAwesomeIcons.wifi),
-                title: const Text('Host Name'),
+                title: const Text('Socket Address'),
                 value: Text(currIp),
                 onPressed: (context) =>
                   Navigator.push(context,
                     PageTransition(
                       child: SettingsFormScreen(
-                        settingName: 'Host Name',
+                        settingName: 'Socket Address',
                         initialVal: currIp,
                         save: (newIp) {
                           context.read<SocketAddress>().setNewSocketAddress(newIp);
@@ -82,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     )
                   ),
               ),
-              SettingsTile.navigation(
+              if (!widget.loginSettings) SettingsTile.navigation(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -101,6 +108,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         side: BorderSide(color: colorScheme.error),
                       ),
                       child: Text("SIGN OUT",
+                        style: TextStyle(
+                          color: colorScheme.error
+                        ),
+                      )
+                    )
+                  ],
+                )
+              ),
+              if (widget.loginSettings) SettingsTile.navigation(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        http
+                          .get(
+                            Uri
+                              .http(
+                                currIp,
+                                "/ping"
+                              )
+                          )
+                          .then((res) => print(res.body));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: colorScheme.error),
+                      ),
+                      child: Text("PING TEST",
                         style: TextStyle(
                           color: colorScheme.error
                         ),

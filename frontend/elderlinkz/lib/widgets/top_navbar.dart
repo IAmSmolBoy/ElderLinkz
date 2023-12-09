@@ -6,11 +6,12 @@ class TopNavbar extends StatefulWidget implements PreferredSizeWidget {
   const TopNavbar({
     super.key,
     required this.title,
+    required this.backButton,
     required this.settingsButton
   });
 
   final String title;
-  final bool settingsButton;
+  final bool backButton, settingsButton;
 
   @override
   State<TopNavbar> createState() => _TopNavbarState();
@@ -35,7 +36,7 @@ class _TopNavbarState extends State<TopNavbar> {
         widget.title.toUpperCase(),
         style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.bold),
       ),
-      leading: widget.settingsButton ?
+      leading: !widget.backButton ?
         LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             return SizedBox(height: constraints.maxHeight, width: constraints.maxHeight);

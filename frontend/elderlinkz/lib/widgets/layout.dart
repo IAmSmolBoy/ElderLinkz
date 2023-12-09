@@ -12,11 +12,12 @@ class Layout extends StatefulWidget {
     required this.title,
     this.bottomNavbar = true,
     this.settingsButton = true,
+    this.backButton = false,
   });
 
   final Widget body;
   final String title;
-  final bool settingsButton, bottomNavbar;
+  final bool settingsButton, bottomNavbar, backButton;
 
   @override
   State<Layout> createState() => _LayoutState();
@@ -42,6 +43,7 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
       resizeToAvoidBottomInset: false,
       appBar: TopNavbar(
         title: widget.title,
+        backButton: widget.backButton,
         settingsButton: widget.settingsButton,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
