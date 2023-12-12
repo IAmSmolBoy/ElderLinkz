@@ -11,4 +11,3 @@ def connect_sql(connectionStr: str):
         print("Error connecting to SQL Server")
 
     return conn
-        

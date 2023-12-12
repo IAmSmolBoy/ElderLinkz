@@ -27,23 +27,27 @@ Future<void> init() async {
 
   // Host name will be prefs ip, if unavilable use environment variable, if unavailable use 10.0.2.2:3000
   String host = prefs.getString("socketAddress") ?? dotenv.env['SOCKET_ADDRESS'] ?? "10.0.2.2:3000";
-  
-  // ping ip address to test connection with backend
+
   try {
-    await http.get(Uri.http(host, "/ping"));
 
     // Get credentials to autologin
     String? credentials = prefs.getString("credentials");
 
     if (credentials != null) {
-      http.Response response = await http.post(
+      // Login with saved credentials
+      http.post(
         Uri.http(host, "/login"),
         body: json.decode(credentials)
-      );
-
-      if (json.decode(response.body)["message"] == "Success") {
-        initialRoute = "/tabs";
-      }
+      )
+      .timeout(
+        const Duration(seconds: 1),
+        onTimeout: () => http.Response('Error', 408)
+      )
+      .then((http.Response response) {
+        if (json.decode(response.body)["message"] == "Success") {
+          initialRoute = "/tabs";
+        }
+      });
     }
   } catch (e) {
     print(e);

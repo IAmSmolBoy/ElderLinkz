@@ -51,7 +51,7 @@ class _SettingsFormScreenState extends State<SettingsFormScreen> {
               children: [
                 TextFormField(
                   controller: _textController,
-                  onTapOutside: (event) { FocusManager.instance.primaryFocus?.dispose(); },
+                  onTapOutside: (event) { FocusManager.instance.primaryFocus?.unfocus(); },
                   decoration: InputDecoration(
                     hintText: widget.settingName,
                     border: OutlineInputBorder(

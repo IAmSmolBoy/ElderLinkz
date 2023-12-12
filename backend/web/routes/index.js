@@ -109,7 +109,7 @@ router.get('/data', function (req, res, next) {
 });
 
 router.post('/data', function (req, res, next) {
-    console.log(req.body)
+    // console.log(req.body)
 
     data = req.body
 

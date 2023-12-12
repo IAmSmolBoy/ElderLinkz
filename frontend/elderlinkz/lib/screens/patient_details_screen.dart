@@ -1,11 +1,10 @@
-import 'dart:convert';
-
+import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/widgets/details_card.dart';
 import 'package:elderlinkz/widgets/layout.dart';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class PatientDetailsScreen extends StatefulWidget {
@@ -48,6 +47,14 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 
         if (snapshot.hasError) {
           print(snapshot.error);
+
+          ScaffoldMessenger
+            .of(context)
+            .showSnackBar(
+              SnackBar(
+                content: Text(snapshot.error.toString())
+              )
+            );
 
           return Layout(
             title: "Error",
@@ -164,9 +171,13 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 // -------------------------------------------------------------------- Functions --------------------------------------------------------------------
 Stream<Map<String, dynamic>> getData(String socketAddress) async* {
   while (true) {
-    http.Response response = await http.get(Uri.http(socketAddress, "/data"),);
+    Map<String, dynamic> resBody = await Http.get(socketAddress, "/data");
 
-    yield json.decode(response.body) as Map<String, dynamic>;
+    if (resBody.containsKey("error")) {
+      throw Exception(resBody["error"]);
+    }
+
+    yield resBody;
   }
 }
 

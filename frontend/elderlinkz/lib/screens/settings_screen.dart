@@ -1,3 +1,4 @@
+import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/classes/theme.dart';
 import 'package:elderlinkz/globals.dart';
@@ -9,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:http/http.dart' as http;
 
 class SettingsScreen extends StatefulWidget {
 
@@ -121,17 +121,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     OutlinedButton(
-                      onPressed: () {
-                        http
-                          .get(
-                            Uri
-                              .http(
-                                currIp,
-                                "/ping"
-                              )
-                          )
-                          .then((res) => print(res.body));
-                      },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: colorScheme.error),
                       ),
@@ -139,7 +128,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: TextStyle(
                           color: colorScheme.error
                         ),
-                      )
+                      ),
+                      onPressed: () {
+                        Http
+                          .get(currIp, "/ping")
+                          .then((body) {
+                            ScaffoldMessenger
+                              .of(context)
+                              .showSnackBar(
+                                SnackBar(
+                                  content: Text(body["error"])
+                                )
+                              );
+                          });
+                      },
                     )
                   ],
                 )

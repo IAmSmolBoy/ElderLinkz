@@ -50,5 +50,5 @@ class OpcuaServer:
 
     def startServer(self):
         self.server.start()
-        input("Press Enter to Stop OPCUA Server.\n")
-        self.server.stop()
+        # input("Press Enter to Stop OPCUA Server.\n")
+        # self.server.stop()

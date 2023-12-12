@@ -27,17 +27,25 @@ var server = http.createServer(app);
 
 const { networkInterfaces } = require('os');
 
-const nets = networkInterfaces();
-const ip = "Wi-Fi" in nets ?
-    nets["Wi-Fi"].filter(
-        function (net) {
-            const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
+function filterFunc(net) {
+    const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4
 
-            return net.family === familyV4Value
-        }
-    )[0]
-    .address :
-    "127.0.0.1";
+    return net.family === familyV4Value
+}
+
+// const nets = networkInterfaces();
+
+// console.log(nets)
+// const ip = "Wi-Fi" in nets ?
+//     nets["Wi-Fi"].filter(filterFunc)[0]
+//     .address :
+//     "127.0.0.1";
+const ip = "0.0.0.0"
+
+// const fs = require('fs');
+// const path = require('node:path');
+
+// fs.writeFileSync(path.relative(process.cwd(), "../globals.txt"), "ip: " + ip,);
 
 server.listen(port, ip);
 server.on('error', onError);
