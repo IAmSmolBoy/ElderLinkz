@@ -178,6 +178,8 @@ Stream<Map<String, dynamic>> getData(String socketAddress) async* {
     }
 
     yield resBody;
+
+    await Future.delayed(const Duration(seconds: 1));
   }
 }
 

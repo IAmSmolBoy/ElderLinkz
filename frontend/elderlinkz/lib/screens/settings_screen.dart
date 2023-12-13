@@ -72,6 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: (context) =>
                   Navigator.push(context,
                     PageTransition(
+                      type: PageTransitionType.rightToLeft,
                       child: SettingsFormScreen(
                         settingName: 'Socket Address',
                         initialVal: currIp,
@@ -81,11 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           prefs.setString("socketAddress", newIp);
                         },
                       ),
-                      childCurrent: Layout(
-                        title: "Settings",
-                        body: widget
-                      ),
-                      type: PageTransitionType.rightToLeftJoined,
                     )
                   ),
               ),
@@ -137,7 +133,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               .of(context)
                               .showSnackBar(
                                 SnackBar(
-                                  content: Text(body["error"])
+                                  content: Text(
+                                    body.containsKey("error") ?
+                                      body["error"] :
+                                      body["message"]
+                                  )
                                 )
                               );
                           });

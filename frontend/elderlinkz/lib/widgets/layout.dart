@@ -1,8 +1,10 @@
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/globals.dart';
+import 'package:elderlinkz/screens/chat_screen.dart';
 import 'package:elderlinkz/widgets/bottom_navbar.dart';
 import 'package:elderlinkz/widgets/top_navbar.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class Layout extends StatefulWidget {
@@ -55,11 +57,16 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         FloatingActionButton(
           backgroundColor: colorScheme.primary,
           onPressed: () {
-            setSelected(4);
+            Navigator.push(context,
+              PageTransition(
+                type: PageTransitionType.rightToLeft,
+                child: const ChatScreen(),
+              )
+            );
           },
           shape: const CircleBorder(),
           child: const Icon(
-            Icons.search,
+            Icons.chat,
             size: 25, 
           )) :
         null,

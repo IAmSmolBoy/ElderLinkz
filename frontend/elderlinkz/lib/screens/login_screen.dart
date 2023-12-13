@@ -1,21 +1,26 @@
 import 'dart:convert';
 
-import 'package:elderlinkz/classes/socket_address.dart';
-import 'package:elderlinkz/globals.dart';
-import 'package:elderlinkz/screens/settings_screen.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/material.dart';
-
 import 'package:flutter_login/flutter_login.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:elderlinkz/classes/colors.dart';
-import 'package:elderlinkz/widgets/tab_manager.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
+import 'package:elderlinkz/classes/colors.dart';
+import 'package:elderlinkz/widgets/tab_manager.dart';
+import 'package:elderlinkz/classes/http.dart';
+import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/classes/socket_address.dart';
+import 'package:elderlinkz/globals.dart';
+import 'package:elderlinkz/main.dart';
+import 'package:elderlinkz/screens/settings_screen.dart';
+
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({ super.key });
+  const LoginScreen({
+    super.key,
+    this.snackbarMsg
+  });
+
+  final String? snackbarMsg;
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -30,41 +35,61 @@ class _LoginScreenState extends State<LoginScreen> {
     '@.com': '.',
   };
 
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
+  // Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> _loginUser(LoginData data, String host) async {
 
     Map<String, String> reqBody = { "name": data.name.toLowerCase(), "password": data.password };
     
-    http.Response response = await http.post(
-      Uri.http(host, "/login"),
+    Map<String, dynamic> loginBody = await Http.post(
+      host,
+      "/login",
       body: reqBody
     );
 
-    String message = json.decode(response.body)["message"];
-
-    if (message == "Success") {
+    if (loginBody.containsKey("message") && loginBody["message"] == "Success") {
       prefs.setString("credentials", json.encode(reqBody));
+
+      Map<String, List<Map<String, dynamic>>> patientsBody = await Http.get(host, "/patients",);
+
+      patients = patientsBody["patients"]
+        ?.map((patient) => Patient.fromMap(patient))
+        .toList() ??
+        [];
 
       return null;
     }
+    else if (loginBody.containsKey("error") && loginBody["error"] != null) {
+      snackbarMsg = loginBody["error"];
 
-    return message;
+      return loginBody["error"];
+    }
+
+    return "An error has occurred";
   }
 
-  Future<String?> _recoverPassword(String name) {
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(name)) {
-        return 'User does not exist';
-      }
-      return null;
-    });
-  }
+  // Future<String?> _recoverPassword(String name) {
+  //   return Future.delayed(loginTime).then((_) {
+  //     if (!mockUsers.containsKey(name)) {
+  //       return 'User does not exist';
+  //     }
+  //     return null;
+  //   });
+  // }
   
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
-    String socketAddress = context.watch<SocketAddress>().socketAddress;
+    
+    if (snackbarMsg != null) {
+      ScaffoldMessenger
+        .of(context)
+        .showSnackBar(
+          SnackBar(
+            content: Text(snackbarMsg!)
+          )
+        );
+    }
 
     return Stack(
       children: [
@@ -99,10 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
             )
           ),
           onLogin: (loginData) {
-            debugPrint('Login info');
-            debugPrint('NurseId: ${loginData.name}');
-            debugPrint('Password: ${loginData.password}');
-            return _loginUser(loginData, socketAddress);
+            return _loginUser(loginData, context.watch<SocketAddress>().socketAddress);
           },
           onSubmitAnimationCompleted: () {
             Navigator.of(context).pushReplacementNamed(
@@ -115,7 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
           onRecoverPassword: (email) {
             debugPrint('Recover password info');
             debugPrint('Name: $email');
-            return _recoverPassword(email);
+            return;
+            // return _recoverPassword(email);
             // Show new password dialog
           },
           userValidator: (value) =>

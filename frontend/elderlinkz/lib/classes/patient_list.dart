@@ -36,9 +36,9 @@ class PatientList extends ChangeNotifier {
 
 class Patient {
   final String name, ic, race, emergencyContact, gender;
-  final DateTime dateOfBirth;
   final int ward, age;
   final double oxygen, heartRate, gsr, humidity, temperature;
+  final DateTime dateOfBirth;
 
   const Patient({
     required this.name,
@@ -46,33 +46,59 @@ class Patient {
     required this.race,
     required this.emergencyContact,
     required this.gender,
-    required this.dateOfBirth,
     required this.age,
     required this.ward,
-    required this.oxygen,
-    required this.heartRate,
-    required this.gsr,
-    required this.humidity,
-    required this.temperature
+    required this.dateOfBirth,
+    this.oxygen = 0.0,
+    this.heartRate = 0.0,
+    this.gsr = 0.0,
+    this.humidity = 0.0,
+    this.temperature = 0.0,
   });
+
+  static Patient fromMap(Map<String, dynamic> patientData) {
+    for (MapEntry<String, dynamic> data in patientData.entries) {
+      debugPrint("${data.key}: ${data.value}");
+    }
+
+    return Patient(
+      name: patientData["name"],
+      ic: patientData["ic"],
+      race: patientData["race"],
+      emergencyContact: patientData["emergencyContact"],
+      gender: patientData["gender"],
+      age: dynamicToInt(patientData["age"]),
+      ward: dynamicToInt(patientData["ward"]),
+      dateOfBirth: dynamicToDateTime(patientData["dateOfBirth"]),
+      oxygen: dynamicToDouble(patientData["oxygen"]),
+      heartRate: dynamicToDouble(patientData["heartRate"]),
+      gsr: dynamicToDouble(patientData["gsr"]),
+      humidity: dynamicToDouble(patientData["humidity"]),
+      temperature: dynamicToDouble( patientData["temperature"]),
+    );
+  }
 
   static Patient fromJson(String jsonData) {
     Map<String, dynamic> parsedData = json.decode(jsonData);
 
-    return Patient(
-      name: parsedData["name"],
-      ic: parsedData["ic"],
-      race: parsedData["race"],
-      emergencyContact: parsedData["emergencyContact"],
-      gender: parsedData["gender"],
-      dateOfBirth: parsedData["dateOfBirth"],
-      age: parsedData["age"],
-      ward: parsedData["ward"],
-      oxygen: parsedData["oxygen"],
-      heartRate: parsedData["heartRate"],
-      gsr: parsedData["gsr"],
-      humidity: parsedData["humidity"],
-      temperature: parsedData["temperature"],
-    );
+    return Patient.fromMap(parsedData);
   }
 }
+
+DateTime dynamicToDateTime(dynamic value) =>
+  value is DateTime ?
+    value :
+    DateTime.tryParse(value) ??
+    DateTime.now();
+
+int dynamicToInt(dynamic value) =>
+  value is int ?
+    value :
+    int.tryParse(value) ??
+    0;
+
+double dynamicToDouble(dynamic value) =>
+  value is double ?
+    value :
+    double.tryParse(value ?? "0.0") ??
+    0.0;

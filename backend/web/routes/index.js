@@ -94,6 +94,12 @@ router.get('/ping', function (req, res, next) {
     res.send({ message: 'pong' });
 });
 
+router.get('/patients', function (req, res, next) {
+    // console.log(Object.values(patients))
+
+    res.send({ patients: Object.values(patients) });
+});
+
 router.get('/patient', function (req, res, next) {
     const patient = patients[req.query.name]
 
@@ -122,7 +128,7 @@ router.post('/login', function (req, res, next) {
         res.send({ message: "Success" })
     }
     else {
-        res.send({ message: "Username or password is incorect" })
+        res.send({ error: "Username or password is incorect" })
     }
 });
 

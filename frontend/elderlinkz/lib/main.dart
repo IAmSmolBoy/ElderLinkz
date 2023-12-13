@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:elderlinkz/classes/colors.dart';
+import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/classes/theme.dart';
@@ -13,11 +14,52 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 
-// Initialisation
+// -------------------------------- Initialisation --------------------------------
 // Set landing page
 String initialRoute = "/login";
+
+// Snackbar message to display
+String? snackbarMsg;
+
+// Patient Data
+List<Patient> patients = [];
+
+// Themes
+final lightTheme = ThemeData(
+  scaffoldBackgroundColor: Colors.white,
+  colorScheme: const ColorScheme(
+    brightness: Brightness.light,
+    primary: AppColors.primaryBlue,
+    onPrimary: Colors.white,
+    secondary: AppColors.primaryGreen,
+    onSecondary: Colors.white,
+    error: AppColors.secondaryRed,
+    onError: Colors.white,
+    background: Colors.white,
+    onBackground: AppColors.primaryBlack,
+    surface: AppColors.primaryLightBlue,
+    onSurface: AppColors.primaryDarkBlue,
+  )
+);
+final darkTheme = ThemeData(
+  scaffoldBackgroundColor: AppColors.primaryBlack,
+  colorScheme: const ColorScheme(
+    brightness: Brightness.dark,
+    primary: AppColors.secondaryBlue,
+    onPrimary: Colors.white,
+    secondary: AppColors.secondaryGreen,
+    onSecondary: Colors.white,
+    error: AppColors.primaryRed,
+    onError: Colors.white,
+    background: AppColors.primaryBlack,
+    onBackground: Colors.white,
+    surface: AppColors.primaryDarkBlue,
+    onSurface: AppColors.primaryLightBlue,
+  )
+);
+
+// Initialise and query data from backend
 Future<void> init() async {
   // Gets data from phon storage
   prefs = await SharedPreferences.getInstance();
@@ -35,19 +77,28 @@ Future<void> init() async {
 
     if (credentials != null) {
       // Login with saved credentials
-      http.post(
-        Uri.http(host, "/login"),
+      Map<String, dynamic> loginBody = await Http.post(
+        host,
+        "/login",
         body: json.decode(credentials)
-      )
-      .timeout(
-        const Duration(seconds: 1),
-        onTimeout: () => http.Response('Error', 408)
-      )
-      .then((http.Response response) {
-        if (json.decode(response.body)["message"] == "Success") {
-          initialRoute = "/tabs";
-        }
-      });
+      );
+      
+      if (loginBody.containsKey("message") && loginBody["message"] == "Success") {
+        initialRoute = "/tabs";
+
+        Map<String, List<Map<String, dynamic>>> patientsBody = await Http.get(host, "/patients",);
+
+        patients = patientsBody["patients"]
+          ?.map((patient) => Patient.fromMap(patient))
+          .toList() ??
+          [];
+      }
+      else if (loginBody.containsKey("error") && loginBody["error"] != null) {
+        snackbarMsg = loginBody["error"];
+      }
+      else {
+        snackbarMsg = "User credentials no long valid";
+      }
     }
   } catch (e) {
     print(e);
@@ -69,148 +120,6 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// ---------------- Themes ----------------
-final lightTheme = ThemeData(
-  scaffoldBackgroundColor: Colors.white,
-  colorScheme: const ColorScheme(
-    brightness: Brightness.light,
-    primary: AppColors.primaryBlue,
-    onPrimary: Colors.white,
-    secondary: AppColors.secondaryPurple,
-    onSecondary: Colors.white,
-    error: Color.fromARGB(255, 102, 30, 30),
-    onError: Colors.white,
-    background: Colors.white,
-    onBackground: AppColors.primaryBlack,
-    surface: AppColors.primaryLightBlue,
-    onSurface: AppColors.primaryDarkBlue,
-  )
-);
-final darkTheme = ThemeData(
-  scaffoldBackgroundColor: AppColors.primaryBlack,
-  colorScheme: const ColorScheme(
-    brightness: Brightness.dark,
-    primary: AppColors.primaryBlue,
-    onPrimary: Colors.white,
-    secondary: AppColors.secondaryPurple,
-    onSecondary: Colors.white,
-    error: AppColors.primaryRed,
-    onError: Colors.white,
-    background: AppColors.primaryBlack,
-    onBackground: Colors.white,
-    surface: AppColors.primaryDarkBlue,
-    onSurface: AppColors.primaryLightBlue,
-  )
-);
-
-  List<Patient> patients = [
-    Patient(
-      name: "Rui Dong",
-      ic: "S0123456C",
-      race: "Chinese",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 60,
-      ward: 1,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Robby",
-      ic: "S1234567C",
-      race: "Chinese",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 61,
-      ward: 1,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Hong Rui",
-      ic: "S2345678C",
-      race: "Chinese",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 62,
-      ward: 1,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Xing Xiao",
-      ic: "S3456789C",
-      race: "Chinese",
-      emergencyContact: "+6567773777",
-      gender: "Female",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 63,
-      ward: 2,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Raphael",
-      ic: "S4567890C",
-      race: "Chinese",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 64,
-      ward: 2,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Jan Gabriel",
-      ic: "S5678901C",
-      race: "Filipino",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 65,
-      ward: 3,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-    Patient(
-      name: "Frederick",
-      ic: "S6789012C",
-      race: "Filipino",
-      emergencyContact: "+6567773777",
-      gender: "Male",
-      dateOfBirth: DateTime.parse("1940-12-07T00:00:00+0800"),
-      age: 66,
-      ward: 3,
-      oxygen: 0.0,
-      heartRate: 0.0,
-      gsr: 0.0,
-      humidity: 0.0,
-      temperature: 0.0
-    ),
-  ];
-
 class MyApp extends StatelessWidget {
   const MyApp({ super.key });
 
@@ -230,7 +139,6 @@ class MyApp extends StatelessWidget {
         ),
       ],
       builder: (context, child) {
-
         return MaterialApp(
           title: 'Flutter Demo',
           themeMode: context.watch<ThemeProvider>().themeMode,
@@ -239,7 +147,7 @@ class MyApp extends StatelessWidget {
           initialRoute: initialRoute,
           // initialRoute: "/test",
           routes: {
-            '/login': (context) => const LoginScreen(),
+            '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),
             '/tabs': (context) => const TabManager(),
           },
         );

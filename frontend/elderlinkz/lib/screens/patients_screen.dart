@@ -1,4 +1,6 @@
+import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/screens/patient_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -10,6 +12,25 @@ class PatientsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    debugPrint(context.watch<SocketAddress>().socketAddress);
+
+    Http
+      .get(
+        context.watch<SocketAddress>().socketAddress,
+        "/patients",
+      )
+      .then((patientsBody) {
+        debugPrint(patientsBody);
+        patientsBody = patientsBody as Map<String, List<Map<String, dynamic>>> ;
+
+        context.read<PatientList>().setPatientList(
+          patientsBody["patients"]
+            ?.map((patient) => Patient.fromMap(patient))
+            .toList() ??
+            []
+        );
+      });
 
     // Get Screen Size
     ColorScheme colorScheme = Theme.of(context).colorScheme;

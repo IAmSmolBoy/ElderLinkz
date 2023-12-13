@@ -16,7 +16,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     Icons.home,
     Icons.person,
     Icons.bar_chart,
-    Icons.abc
+    Icons.search
   ];
 
   @override
@@ -35,8 +35,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
 
     return AnimatedBottomNavigationBar(
       backgroundColor: colorScheme.surface,
-      activeColor: colorScheme.primary,
-      splashColor: colorScheme.onPrimary,
+      activeColor: colorScheme.onSurface,
+      splashColor: colorScheme.onSurface,
       inactiveColor: colorScheme.onSurface.withOpacity(0.5),
       icons: iconItems,
       activeIndex: context.watch<NavbarSelected>().index,

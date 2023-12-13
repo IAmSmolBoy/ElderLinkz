@@ -4,7 +4,6 @@ import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/screen_data.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/analytics_screen.dart';
-import 'package:elderlinkz/screens/home%20copy%203.dart';
 import 'package:elderlinkz/screens/home.dart';
 import 'package:elderlinkz/screens/patients_screen.dart';
 import 'package:elderlinkz/screens/search_screen.dart';
@@ -25,7 +24,6 @@ class _TabManagerState extends State<TabManager> with SingleTickerProviderStateM
     ScreenData(title: "Welcome, ${json.decode(prefs.getString('credentials') ?? '{}')['name']}", screen: const Home(),),
     const ScreenData(title: "Patients", screen: PatientsScreen(),),
     const ScreenData(title: "Analytics", screen: AnalyticsScreen(),),
-    const ScreenData(title: "Screen4", screen: Screen4()),
     const ScreenData(title: "Search", screen: SearchScreen())
   ];
 
