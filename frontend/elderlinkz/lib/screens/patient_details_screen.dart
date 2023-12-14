@@ -23,6 +23,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 
   late TabController _tabController;
   late Patient _patient;
+  late Http httpClient;
+
   @override
   void initState() {
     super.initState();
@@ -41,123 +43,125 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     Size screenSize = MediaQuery.of(context).size;
 
-    return StreamBuilder<Map<String, dynamic>>(
-      stream: getData(context.watch<SocketAddress>().socketAddress),
-      builder: (context, snapshot) {
+    httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
 
-        if (snapshot.hasError) {
-          print(snapshot.error);
+    return Layout(
+        title: widget.patient.name,
+        bottomNavbar: false,
+        backButton: true,
+        body: StreamBuilder<Map<String, dynamic>>(
+          stream: getData(httpClient),
+          builder: (context, snapshot) {
+    
+            if (snapshot.hasError) {
+              debugPrint("${snapshot.error}");
 
-          ScaffoldMessenger
-            .of(context)
-            .showSnackBar(
-              SnackBar(
-                content: Text(snapshot.error.toString())
-              )
-            );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ScaffoldMessenger
+                .of(context)
+                .showSnackBar(
+                  SnackBar(
+                    content: Text(snapshot.error.toString())
+                  )
+                );
+              });
+    
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+    
+            if (snapshot.connectionState != ConnectionState.active || !snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+    
+            debugPrint("${snapshot.data}");
 
-          return Layout(
-            title: "Error",
-            body: Center(
-              child: Text(snapshot.error.toString()),
-            ),
-          );
-        }
+            PatientList patientList = context.read<PatientList>();
 
-        if (snapshot.connectionState != ConnectionState.active || !snapshot.hasData) {
-          return const Layout(
-            title: "Loading...",
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        print(snapshot.data);
-
-        _patient = context.read<PatientList>().updatePatientData(0, snapshot.data!);
-
-        return Layout(
-          title: widget.patient.name,
-          bottomNavbar: false,
-          backButton: true,
-          body: Stack(
-            children: [
-              Positioned(
-                width: screenSize.width,
-                top: 50,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      minRadius: 75,
-                      backgroundColor: colorScheme.onBackground,
-                      child: Icon(Icons.person,
-                        size: 100,
-                        color: colorScheme.background,
+            int index = patientList.patientList.indexWhere((patient) => patient.name == _patient.name);
+    
+            _patient = patientList.updatePatientData(index, snapshot.data!);
+    
+            return Stack(
+              children: [
+                Positioned(
+                  width: screenSize.width,
+                  top: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        minRadius: 75,
+                        backgroundColor: colorScheme.onBackground,
+                        child: Icon(Icons.person,
+                          size: 100,
+                          color: colorScheme.background,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 250,),
-                    Container(
-                      color: colorScheme.surface,
-                      child: Column(
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxHeight: screenSize.height * .65,),
-                            child: TabBarView(
-                              controller: _tabController,
-                              children: [
-                                DetailsCard(
-                                  sectionTitle: "Personal",
-                                  sectionWidgets: [
-                                    ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Gender", _patient.gender, textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Age", _patient.age.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Date Of Birth",
-                                      _patient.dateOfBirth
-                                        .toString()
-                                        .split(" ")[0]
-                                        .split("-")
-                                        .reversed
-                                        .join("/"),
-                                      textColor: colorScheme.onSecondary
-                                    ),
-                                  ]
-                                ),
-                                DetailsCard(
-                                  sectionTitle: "Health",
-                                  sectionWidgets: [
-                                    ...displayValueWidget("Ward", _patient.ward.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Heart Rate", _patient.heartRate.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Temperature", _patient.temperature.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Humidity", _patient.humidity.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("Oxygen", _patient.oxygen.toString(), textColor: colorScheme.onSecondary),
-                                    ...displayValueWidget("GSR", _patient.gsr.toString(), textColor: colorScheme.onSecondary),
-                                  ]
-                                ),
-                              ]
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 250,),
+                      Container(
+                        color: colorScheme.surface,
+                        child: Column(
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: screenSize.height * .65,),
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  DetailsCard(
+                                    sectionTitle: "Personal",
+                                    sectionWidgets: [
+                                      ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Gender", _patient.gender, textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Age", _patient.age.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Date Of Birth",
+                                        _patient.dateOfBirth
+                                          .toString()
+                                          .split(" ")[0]
+                                          .split("-")
+                                          .reversed
+                                          .join("/"),
+                                        textColor: colorScheme.onSecondary
+                                      ),
+                                    ]
+                                  ),
+                                  DetailsCard(
+                                    sectionTitle: "Health",
+                                    sectionWidgets: [
+                                      ...displayValueWidget("Ward", _patient.ward.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Heart Rate", _patient.heartRate.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Temperature", _patient.temperature.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Humidity", _patient.humidity.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Oxygen", _patient.oxygen.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("GSR", _patient.gsr.toString(), textColor: colorScheme.onSecondary),
+                                    ]
+                                  ),
+                                ]
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 200,),
-                        ],
+                            const SizedBox(height: 200,),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }
-    );
+              ],
+            );
+          }
+        ),
+      );
   }
 }
 
@@ -169,15 +173,17 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 
 
 // -------------------------------------------------------------------- Functions --------------------------------------------------------------------
-Stream<Map<String, dynamic>> getData(String socketAddress) async* {
+Stream<Map<String, dynamic>> getData(Http httpClient) async* {
   while (true) {
-    Map<String, dynamic> resBody = await Http.get(socketAddress, "/data");
+    
+    Map<String, dynamic> data = await httpClient.get(path: "/data");
 
-    if (resBody.containsKey("error")) {
-      throw Exception(resBody["error"]);
+    if (data.containsKey("error")) {
+      throw data["error"];
     }
-
-    yield resBody;
+    else {
+      yield data;
+    }
 
     await Future.delayed(const Duration(seconds: 1));
   }

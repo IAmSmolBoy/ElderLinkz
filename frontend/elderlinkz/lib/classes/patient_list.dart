@@ -32,6 +32,11 @@ class PatientList extends ChangeNotifier {
     return patientList[index];
   }
 
+  static List<Patient> fromJsonObj(Map<String, dynamic> jsonObj) => 
+    (jsonObj["patients"] as List)
+      .map((patient) => Patient.fromMap(patient as Map<String, dynamic>))
+      .toList();
+
 }
 
 class Patient {
@@ -57,9 +62,9 @@ class Patient {
   });
 
   static Patient fromMap(Map<String, dynamic> patientData) {
-    for (MapEntry<String, dynamic> data in patientData.entries) {
-      debugPrint("${data.key}: ${data.value}");
-    }
+    // for (MapEntry<String, dynamic> data in patientData.entries) {
+    //   debugPrint("${data.key}: ${data.value}");
+    // }
 
     return Patient(
       name: patientData["name"],

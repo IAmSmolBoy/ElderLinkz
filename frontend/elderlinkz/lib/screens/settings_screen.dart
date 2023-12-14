@@ -26,11 +26,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
 
+  late Http httpClient;
+
   @override
   Widget build(BuildContext context) {
 
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     String currIp = context.watch<SocketAddress>().socketAddress;
+
+    httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
 
     return Layout(
       title: "Settings",
@@ -126,8 +130,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Http
-                          .get(currIp, "/ping")
+                        httpClient
+                          .get(path: "/ping")
                           .then((body) {
                             ScaffoldMessenger
                               .of(context)

@@ -6,10 +6,13 @@ import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/classes/theme.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/functions/get_patient_data.dart';
+import 'package:elderlinkz/functions/login.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/login_screen.dart';
 import 'package:elderlinkz/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/flutter_login.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,40 +73,46 @@ Future<void> init() async {
   // Host name will be prefs ip, if unavilable use environment variable, if unavailable use 10.0.2.2:3000
   String host = prefs.getString("socketAddress") ?? dotenv.env['SOCKET_ADDRESS'] ?? "10.0.2.2:3000";
 
-  try {
+  // Get Http client
+  Http httpClient = Http(socketAddress: host);
 
-    // Get credentials to autologin
-    String? credentials = prefs.getString("credentials");
+  // Get credentials to autologin
+  String? credentialsJson = prefs.getString("credentials");
 
-    if (credentials != null) {
-      // Login with saved credentials
-      Map<String, dynamic> loginBody = await Http.post(
-        host,
-        "/login",
-        body: json.decode(credentials)
+  if (credentialsJson != null) {
+    Map<String, dynamic> credentials = json.decode(credentialsJson);
+
+    if (credentials.containsKey("name") && credentials.containsKey("password")) {
+      String name = credentials["name"] as String;
+      String password = credentials["password"] as String;
+
+      snackbarMsg = await login(
+        httpClient: httpClient,
+        credentials: LoginData(
+          name: name,
+          password: password
+        ),
+        onSuccess: (loginBody) {
+          initialRoute = "/tabs";
+
+          return getPatientData(
+            httpClient: httpClient,
+            onUnknownError: () => "Something went wrong",
+            onSuccess: (patientsBody) {
+              patients = PatientList.fromJsonObj(patientsBody);
+
+              return null;
+            },
+          );
+
+        },
       );
-      
-      if (loginBody.containsKey("message") && loginBody["message"] == "Success") {
-        initialRoute = "/tabs";
 
-        Map<String, List<Map<String, dynamic>>> patientsBody = await Http.get(host, "/patients",);
-
-        patients = patientsBody["patients"]
-          ?.map((patient) => Patient.fromMap(patient))
-          .toList() ??
-          [];
-      }
-      else if (loginBody.containsKey("error") && loginBody["error"] != null) {
-        snackbarMsg = loginBody["error"];
-      }
-      else {
-        snackbarMsg = "User credentials no long valid";
-      }
     }
-  } catch (e) {
-    print(e);
+    else {
+      snackbarMsg = "Saved credentials are invalid";
+    }
   }
-  
 }
 
 Future<void> main() async {

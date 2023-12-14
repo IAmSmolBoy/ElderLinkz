@@ -6,7 +6,15 @@ int timeoutSec = 5;
 
 class Http {
 
-  static Future<dynamic> get(String socketAddress, String path) async {
+  const Http({
+    required this.socketAddress,
+  });
+
+  final String socketAddress;
+
+  Future<dynamic> get({
+    required String path,
+  }) async {
     http.Response response = await http
       .get(Uri.http(socketAddress, path),)
       .timeout(
@@ -23,7 +31,10 @@ class Http {
       }
   }
 
-  static Future<dynamic> post(String socketAddress, String path, { Object? body }) async {
+  Future<dynamic> post({
+    required String path,
+    Object? body
+  }) async {
     http.Response response = await http
       .post(
         Uri.http(socketAddress, path),
@@ -34,7 +45,13 @@ class Http {
         onTimeout: () => http.Response('{"error":"The connection has timed out"}', 408)
       );
 
-    return json.decode(response.body);
+      try {
+        return json.decode(response.body);
+      } catch (e){
+        print(response.body);
+        
+        return { "error": "An Error has occurred" };
+      }
   }
 
 }
