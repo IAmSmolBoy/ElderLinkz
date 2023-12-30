@@ -11,7 +11,7 @@ Future<String?> getPatientData({
 
   try {
 
-    final Map<String, dynamic> patientsBody = await httpClient.get(path: "/patients",);
+    final Map<String, dynamic> patientsBody = await httpClient.get(path: "/elderlinkz/patients",);
 
     if (patientsBody.containsKey("patients") && onSuccess != null) {
 

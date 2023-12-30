@@ -2,6 +2,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class BottomNavbar extends StatefulWidget {
@@ -15,7 +16,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
   List<IconData> iconItems = [
     Icons.home,
     Icons.person,
-    Icons.bar_chart,
+    // Icons.bar_chart,
+    FontAwesomeIcons.listCheck,
     Icons.search
   ];
 

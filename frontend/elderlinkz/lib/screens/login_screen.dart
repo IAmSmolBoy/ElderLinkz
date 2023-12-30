@@ -54,13 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
     httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
     
     if (snackbarMsg != null) {
-      ScaffoldMessenger
-        .of(context)
-        .showSnackBar(
-          SnackBar(
-            content: Text(snackbarMsg!)
-          )
-        );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger
+          .of(context)
+          .showSnackBar(
+            SnackBar(
+              content: Text(snackbarMsg!)
+            )
+          );
+      });
     }
 
     return Stack(

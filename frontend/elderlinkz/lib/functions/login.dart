@@ -16,7 +16,7 @@ Future<String?> login({
     
     // Login with saved credentials
     Map<String, dynamic> loginBody = await httpClient.post(
-      path: "/login",
+      path: "/elderlinkz/login",
       body: {
         "name": credentials.name.toLowerCase(),
         "password": credentials.password

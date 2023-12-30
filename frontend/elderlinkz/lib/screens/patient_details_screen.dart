@@ -77,7 +77,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
               );
             }
     
-            debugPrint("${snapshot.data}");
+            // debugPrint("${snapshot.data}");
 
             PatientList patientList = context.read<PatientList>();
 
@@ -118,7 +118,11 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                                 controller: _tabController,
                                 children: [
                                   DetailsCard(
+                                    rightArrow: true,
                                     sectionTitle: "Personal",
+                                    toHealthTab: () {
+                                      _tabController.animateTo(1);
+                                    },
                                     sectionWidgets: [
                                       ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
@@ -137,14 +141,18 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                                     ]
                                   ),
                                   DetailsCard(
+                                    leftArrow: true,
                                     sectionTitle: "Health",
+                                    toPersonalTab: () {
+                                      _tabController.animateTo(0);
+                                    },
                                     sectionWidgets: [
                                       ...displayValueWidget("Ward", _patient.ward.toString(), textColor: colorScheme.onSecondary),
-                                      ...displayValueWidget("Heart Rate", _patient.heartRate.toString(), textColor: colorScheme.onSecondary),
-                                      ...displayValueWidget("Temperature", _patient.temperature.toString(), textColor: colorScheme.onSecondary),
-                                      ...displayValueWidget("Humidity", _patient.humidity.toString(), textColor: colorScheme.onSecondary),
-                                      ...displayValueWidget("Oxygen", _patient.oxygen.toString(), textColor: colorScheme.onSecondary),
-                                      ...displayValueWidget("GSR", _patient.gsr.toString(), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Heart Rate", _patient.heartRate.toStringAsFixed(2), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Temperature", _patient.temperature.toStringAsFixed(2), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Humidity", _patient.humidity.toStringAsFixed(2), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("Oxygen", _patient.oxygen.toStringAsFixed(2), textColor: colorScheme.onSecondary),
+                                      ...displayValueWidget("GSR", _patient.gsr.toStringAsFixed(2), textColor: colorScheme.onSecondary),
                                     ]
                                   ),
                                 ]
@@ -175,14 +183,19 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 // -------------------------------------------------------------------- Functions --------------------------------------------------------------------
 Stream<Map<String, dynamic>> getData(Http httpClient) async* {
   while (true) {
-    
-    Map<String, dynamic> data = await httpClient.get(path: "/data");
+    try {
+      Map<String, dynamic> data = await httpClient.get(path: "/elderlinkz/data");
 
-    if (data.containsKey("error")) {
-      throw data["error"];
-    }
-    else {
-      yield data;
+      if (data.containsKey("error")) {
+        throw data["error"];
+      }
+      else {
+        yield data;
+      }
+    } catch(e) {
+
+      debugPrint("$e");
+      rethrow;
     }
 
     await Future.delayed(const Duration(seconds: 1));

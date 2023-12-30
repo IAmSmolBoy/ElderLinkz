@@ -59,11 +59,12 @@ client = connect_mqtt()
 
 while True:
 
-    client.publish("temperature", random.random() * 5 + 35)
-    client.publish("gsr", random.randint(0, 40))
-    client.publish("oxygen", random.randint(87, 100))
-    client.publish("heart", random.randint(60, 180))
-    client.publish("humidity", random.randint(90, 120))
+    client.publish("TMP", random.random() * 5 + 35)
+    client.publish("HAPP", random.randint(0, 40))
+    if random.random() > .6:
+        client.publish("OXY", random.randint(87, 100))
+    # client.publish("heart", random.randint(60, 180))
+    client.publish("HUMI", random.randint(90, 120))
     # print("publish")
     
     time.sleep(1)

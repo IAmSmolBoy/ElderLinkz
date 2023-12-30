@@ -14,11 +14,11 @@ load_dotenv()
 
 
 TOPICS = [
-    "temperature",
-    "gsr",
-    "oxygen",
-    "heart",
-    "humidity"
+    "TMP",
+    "HAPP",
+    "OXY",
+    # "heart",
+    "HUMI"
 ] # simulation topics (If you have more values add here)
 
 # MQTT variables
@@ -41,7 +41,7 @@ NODEIDS = [
     { 'name': 'temperature','nodeId': 'ns=2;i=2' },
     { 'name': 'gsr','nodeId': 'ns=2;i=3' },
     { 'name': 'oxygen','nodeId': 'ns=2;i=4' },
-    { 'name': 'heart','nodeId': 'ns=2;i=5' },
+    # { 'name': 'heart','nodeId': 'ns=2;i=5' },
     { 'name': 'humidity','nodeId': 'ns=2;i=6' },
 ]
 
@@ -86,16 +86,6 @@ if __name__ == '__main__':
     # Data retrieved from MQTT
     data = {}
 
-    print('\n------------------------------ Ping Testing to Web Server ------------------------------')
-    print('ping', end=' ')
-    enableHttp = True
-
-    try:
-        print(http.get('/ping').json()['message'], '\n\n')
-    except:
-        enableHttp = False
-        print("\nError connecting to http")
-
     # MQTT on_message function
     def on_message(client, userdata, msg: MQTTMessage):
 
@@ -105,8 +95,10 @@ if __name__ == '__main__':
 
         # Adds into data variable
         data[topic] = payload
+
+        # http.get(f'/elderlinkz/{topic}/{payload}')
         
-        if len(data.keys()) == len(TOPICS):
+        if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data):
             try:
                 # sql.execute(f"INSERT INTO readings ({','.join(data.keys())})"
                 #             f"VALUES ({','.join(data.values())});")
@@ -114,7 +106,7 @@ if __name__ == '__main__':
 
                 if enableHttp:
                     # Send data to http web server
-                    http.post('/data', data).json()
+                    http.post('/elderlinkz/data', data).json()
 
                 # Update opcua values
                 for nodeId in NODEIDS:
@@ -130,12 +122,23 @@ if __name__ == '__main__':
 
             data = {}
 
-    # Set on Message
-    client.on_message = on_message
+    print('\n------------------------------ Ping Testing to Web Server ------------------------------')
+    print('ping', end=' ')
+    enableHttp = True
+
+    try:
+        print(http.get('/elderlinkz/ping').json()['message'], '\n\n')
+    except:
+        enableHttp = False
+        print("\nError connecting to http")
 
     # Subscribe to all the specified topics and adds opcua variables
     for topic in TOPICS:
+
         client.subscribe(topic)
+
+    # Set on Message
+    client.on_message = on_message
     
     # Make the client run until stopped
     client.loop_forever()

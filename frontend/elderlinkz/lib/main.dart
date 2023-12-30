@@ -4,6 +4,7 @@ import 'package:elderlinkz/classes/colors.dart';
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
+import 'package:elderlinkz/classes/task_list.dart';
 import 'package:elderlinkz/classes/theme.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/functions/get_patient_data.dart';
@@ -134,10 +135,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? tasksJson = prefs.getString("tasks");
+    final taskList = TaskList.fromJson(tasksJson ?? json.encode({ "Tasks": [] }));
+
+    if (tasksJson == null) {
+      prefs.setString("tasks", json.encode({ "Tasks": [] }));
+    }
+
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
         ChangeNotifierProvider( create: (context) => PatientList(patientList: patients), ),
+        ChangeNotifierProvider( create: (context) => TaskList(taskList: taskList), ),
         ChangeNotifierProvider( create: (context) => SocketAddress(socketAddress: prefs.getString("socketAddress") ?? dotenv.env['SOCKET_ADDRESS'] ?? "10.0.2.2:3000"), ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(
@@ -158,6 +168,7 @@ class MyApp extends StatelessWidget {
           routes: {
             '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),
             '/tabs': (context) => const TabManager(),
+            // '/test': (context) => StatsPage(),
           },
         );
       },

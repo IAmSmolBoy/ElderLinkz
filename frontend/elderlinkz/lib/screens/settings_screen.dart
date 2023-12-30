@@ -130,21 +130,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       onPressed: () {
-                        httpClient
-                          .get(path: "/ping")
-                          .then((body) {
-                            ScaffoldMessenger
-                              .of(context)
-                              .showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    body.containsKey("error") ?
-                                      body["error"] :
-                                      body["message"]
+                        try {
+                          httpClient
+                            .get(path: "/elderlinkz/ping")
+                            .then((body) {
+                              ScaffoldMessenger
+                                .of(context)
+                                .showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      body.containsKey("error") ?
+                                        body["error"] :
+                                        body["message"]
+                                    )
                                   )
+                                );
+                            });
+                        } catch (e) {
+                          debugPrint(e.toString());
+
+                          ScaffoldMessenger
+                            .of(context)
+                            .showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  e.toString()
                                 )
-                              );
-                          });
+                              )
+                            );
+                        }
                       },
                     )
                   ],

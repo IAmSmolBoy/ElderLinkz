@@ -22,11 +22,11 @@ class PatientList extends ChangeNotifier {
       dateOfBirth: patientList[index].dateOfBirth,
       age: patientList[index].age,
       ward: patientList[index].ward,
-      oxygen: double.tryParse(patientData["oxygen"] ?? "0.0") ?? 0.0,
+      oxygen: double.tryParse(patientData["OXY"] ?? "0.0") ?? 0.0,
       heartRate: double.tryParse(patientData["heartRate"] ?? "0.0") ?? 0.0,
-      gsr: double.tryParse(patientData["gsr"] ?? "0.0") ?? 0.0,
-      humidity: double.tryParse(patientData["humidity"] ?? "0.0") ?? 0.0,
-      temperature: double.tryParse(patientData["temperature"] ?? "0.0") ?? 0.0,
+      gsr: double.tryParse(patientData["GSR"] ?? "0.0") ?? 0.0,
+      humidity: double.tryParse(patientData["HUMI"] ?? "0.0") ?? 0.0,
+      temperature: double.tryParse(patientData["TMP"] ?? "0.0") ?? 0.0,
     );
 
     return patientList[index];

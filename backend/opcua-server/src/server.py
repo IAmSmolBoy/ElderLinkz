@@ -10,7 +10,7 @@ VARIABLES = [
     "temperature",
     "gsr",
     "oxygen",
-    "heart",
+    # "heart",
     "humidity",
 ]
 
