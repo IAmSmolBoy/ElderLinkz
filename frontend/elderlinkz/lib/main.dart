@@ -135,13 +135,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? tasksJson = prefs.getString("tasks");
-    final taskList = TaskList.fromJson(tasksJson ?? json.encode({ "Tasks": [] }));
+    // String? tasksJson = prefs.getString("tasks");
+    // final taskList = TaskList.fromJson(tasksJson ?? json.encode({ "Tasks": [] }));
 
-    if (tasksJson == null) {
-      prefs.setString("tasks", json.encode({ "Tasks": [] }));
-    }
+    // if (tasksJson == null) {
+    //   prefs.setString("tasks", json.encode({ "Tasks": [] }));
+    // }
 
+    List<String>? taskListJson = prefs.getStringList("tasks");
+    final taskList = TaskList.fromStringList(taskListJson ?? []);
 
     return MultiProvider(
       providers: [

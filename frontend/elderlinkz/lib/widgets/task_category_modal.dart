@@ -37,7 +37,7 @@ class _AddTaskModalState extends State<AddTaskModal> {
   void initState() {
 
     name = widget.task.name;
-    category = widget.task.category;
+    // category = widget.task.category;
     deadline = widget.task.deadline
       .toString()
       .split(" ")[0];
@@ -64,14 +64,14 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
     TaskList taskList = context.read<TaskList>();
 
-    List<String> categories = {
-      "Tasks",
-      ...taskList
-        .taskList
-        .keys
-        .toSet(),
-    }
-    .toList();
+    // List<String> categories = {
+    //   "Tasks",
+    //   ...taskList
+    //     .taskList
+    //     .keys
+    //     .toSet(),
+    // }
+    // .toList();
 
     return Center(
       child: Card(
@@ -128,22 +128,22 @@ class _AddTaskModalState extends State<AddTaskModal> {
                     onTap: () { deadlineOnChange(taskList); },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7.5),
-                  child: DropdownButton<String>(
-                    value: category,
-                    onChanged: (String? category) { categoryOnChange(category, taskList); },
-                    items: categories
-                      .map(
-                        (taskCategory) =>
-                          DropdownMenuItem(
-                            value: taskCategory,
-                            child: Text(taskCategory),
-                          )
-                      )
-                      .toList(),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 7.5),
+                //   child: DropdownButton<String>(
+                //     value: category,
+                //     onChanged: (String? category) { categoryOnChange(category, taskList); },
+                //     items: categories
+                //       .map(
+                //         (taskCategory) =>
+                //           DropdownMenuItem(
+                //             value: taskCategory,
+                //             child: Text(taskCategory),
+                //           )
+                //       )
+                //       .toList(),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -207,20 +207,20 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
   }
 
-  void categoryOnChange(String? value, TaskList taskList) {
-    if (value != null && value.isNotEmpty) {
-      setState(() {
-        category = value;
-      });
+  // void categoryOnChange(String? value, TaskList taskList) {
+  //   if (value != null && value.isNotEmpty) {
+  //     setState(() {
+  //       category = value;
+  //     });
       
-      taskList.setTask(
-        widget.task
-          .setCategory(category)
-      );
-    }
-    else {
-      errorText = "Please enter task category";
-    }
-  }
+  //     taskList.setTask(
+  //       widget.task
+  //         .setCategory(category)
+  //     );
+  //   }
+  //   else {
+  //     errorText = "Please enter task category";
+  //   }
+  // }
 
 }

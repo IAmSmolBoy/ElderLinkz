@@ -1,111 +1,118 @@
 import 'package:elderlinkz/classes/task_list.dart';
-import 'package:elderlinkz/widgets/task_tab.dart';
+import 'package:elderlinkz/widgets/add_task_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class TasksScreen extends StatefulWidget {
-  const TasksScreen({ super.key });
+  const TasksScreen({
+    super.key,
+    // required this.category,
+    // required this.tasks
+  });
+
+  // final String category;
+  // final List<Task> tasks;
 
   @override
   State<TasksScreen> createState() => _TasksScreenState();
 }
 
-class _TasksScreenState extends State<TasksScreen> with TickerProviderStateMixin {
+class _TasksScreenState extends State<TasksScreen> {
 
-  final newListButtonKey = GlobalKey();
-  double newListButtonWidth = 0.0;
-  
-  late TabController _tabController;
+  bool showCompletedTasks = false;
 
-  @override
-  void initState() {
-    // Get width of TabBar
-    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-      setState(() {
-        newListButtonWidth = newListButtonKey.currentContext?.size?.width ?? 0.0;
-      });
-    });
-    super.initState();
-  }
+  // List<String> categories = [];
 
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    TaskList taskList = context
+      .read<TaskList>();
 
-    TextStyle tabBarTextStyle = TextStyle(
-      color: colorScheme.onSurface,
-      fontSize: 17,
-    );
+    List<Task> tasks = context
+      .watch<TaskList>().taskList;
 
-    //Task List
-    TaskList taskList = context.watch<TaskList>();
+    List<Task> completedTasks = tasks
+      .where((task) => task.completed)
+      .toList();
 
-    // Get task list
-    Map<String, List<Task>> tasks = taskList.taskList;
+    // debugPrint(taskList.toJson());
 
-    // Get all categories
-    List<String> categoryNames = {
-      "Tasks",
-      ...tasks
-        .keys
-        .toSet(),
-    }
-    .toList();
-
-    _tabController = TabController(
-      vsync: this,
-      length: categoryNames.length,
-    );
-
-    return Column(
-      children: [
-        Container(
-          width: screenSize.width,
-          color: colorScheme.surface,
-          child: Row(
-            children: [
-              if (newListButtonWidth != 0.0) SizedBox(
-                width: screenSize.width - newListButtonWidth,
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorColor: colorScheme.onSurface,
-                  tabs: getTabs(categoryNames, tabBarTextStyle),
-                ),
-              ),
-              ElevatedButton(
-                key: newListButtonKey,
-                style: ElevatedButton.styleFrom(elevation: 0),
-                onPressed: () { newList(taskList); },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.add_circle,
-                        color: colorScheme.onSurface,
-                      ),
-                      const SizedBox(width: 10,),
-                      Text(
-                        "New List",
-                        style: tabBarTextStyle,
-                      ),
-                    ],
+    return SizedBox(
+      width: screenSize.width,
+      height: screenSize.height - 200,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Uncompleted Task List Section
+            Padding(
+              padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Text(widget.category,
+                  const Text("Tasks",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
+                  ElevatedButton(
+                    onPressed: () { addTask(taskList); },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: const CircleBorder()
+                    ),
+                    child: Icon(Icons.add,
+                      // size: 30,
+                      color: colorScheme.onBackground,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            ...tasks
+              .where((task) => !task.completed)
+              .map(
+                (task) =>
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return ListTile(
+                        title: Text(task.name),
+                        onTap: () { editTask(taskList, task); }
+                      );
+                    }
+                  )
+              ),
+    
+            // Completed Task Section
+            if (completedTasks.isNotEmpty)
+              ListTile(
+                onTap: toggleCompletedTasks,
+                title: const Text("Completed Tasks"),
+                trailing: Icon(
+                  showCompletedTasks ?
+                    Icons.arrow_drop_down :
+                    Icons.arrow_drop_up
                 ),
               ),
-            ],
-          ),
+            if (showCompletedTasks)
+              ...completedTasks
+                .map(
+                  (task) =>
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return ListTile(
+                          title: Text(task.name),
+    
+                        );
+                      }
+                    )
+                )
+          ]
         ),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: screenSize.width, maxHeight: screenSize.height - 200),
-          child: TabBarView(
-            controller: _tabController,
-            children: getTabViews(tasks)
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -121,38 +128,44 @@ class _TasksScreenState extends State<TasksScreen> with TickerProviderStateMixin
 
 
 
-  // Get Tabs
-  List<Widget> getTabs(List<String> categoryNames, TextStyle tabBarTextStyle) {
-    return categoryNames
-      .map(
-        (category) =>
-          Tab(
-            child: Text(
-              category,
-              style: tabBarTextStyle,
-            ),
-          ),
-      )
-      .toList();
-  }
-  // Get Tab Views
-  List<Widget> getTabViews(Map<String, List<Task>> tasks) {
 
-    return tasks
-      .keys
-      .map(
-        (category) =>
-          TaskTab(
-            category: category,
-            tasks: tasks[category]!
+  // OnTap Functions
+  
+  // Show Completed Tasks
+  void toggleCompletedTasks() {
+    setState(() {
+      showCompletedTasks = !showCompletedTasks;
+    });
+  }
+  
+  // Open SetTask Modal
+  openSetTaskModal(Task task) {
+    showDialog(
+      context: context,
+      builder:
+        (context) =>
+          AddTaskModal(
+            task: task
           )
-      )
-      .toList();
+    );
   }
 
-  void newList(TaskList taskList) {
+  void addTask(TaskList taskList) {
+    
+    openSetTaskModal(
+      taskList.addTask(
+        name: 'New Task',
+        // category: 'Tasks',
+        deadline: DateTime.now(),
+        completed: false
+      )
+    );
 
-    // taskList.newList();
+  }
+
+  void editTask(TaskList taskList, Task task) {
+    
+    openSetTaskModal(task);
 
   }
 }
