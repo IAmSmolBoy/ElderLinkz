@@ -22,8 +22,10 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
   // Task values
   String name = "";
-  String category = "";
-  String deadline = "";
+  // String category = "";
+  bool completed = false;
+  DateTime deadline = DateTime.now();
+  String deadlineStr = "";
   String? errorText;
 
   // Global key to get close modal button size
@@ -37,14 +39,14 @@ class _AddTaskModalState extends State<AddTaskModal> {
   void initState() {
 
     name = widget.task.name;
-    // category = widget.task.category;
-    deadline = widget.task.deadline
+    deadline = widget.task.deadline;
+    deadlineStr = deadline
       .toString()
       .split(" ")[0];
 
-    nameController = TextEditingController( text: name );
-    deadlineController = TextEditingController( text: deadline );
-    categoryController = TextEditingController( text: category );
+    nameController = TextEditingController(text: name);
+    deadlineController = TextEditingController(text: deadlineStr);
+    completed = widget.task.completed;
 
     // Get width of card
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
@@ -64,86 +66,116 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
     TaskList taskList = context.read<TaskList>();
 
-    // List<String> categories = {
-    //   "Tasks",
-    //   ...taskList
-    //     .taskList
-    //     .keys
-    //     .toSet(),
-    // }
-    // .toList();
-
     return Center(
       child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: Container(
-          height: modalSize.height,
           width: modalSize.width,
-          color: colorScheme.surface,
+          height: modalSize.height,
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(10)
+          ),
           child: Padding(
             padding: const EdgeInsets.all(15.0),
-            // padding: EdgeInsets.zero,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: modalSize.width - iconWidth - 30,
-                      child: TextField(
-                        controller: nameController,
-                        cursorColor: colorScheme.onSurface,
-                        decoration: const InputDecoration( border: InputBorder.none, ),
-                        onTapOutside: (_) { FocusManager.instance.primaryFocus?.unfocus(); },
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                          width: modalSize.width - iconWidth - 30,
+                          child: TextField(
+                            controller: nameController,
+                            cursorColor: colorScheme.onSurface,
+                            onChanged: (value) { nameOnChange(value, taskList); },
+                            decoration: const InputDecoration( border: InputBorder.none, ),
+                            onTapOutside: (_) { FocusManager.instance.primaryFocus?.unfocus(); },
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
                         ),
-                        onChanged: (value) => nameOnChange(value, taskList),
+                        IconButton(
+                          key: _iconKey,
+                          iconSize: 25,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(maxWidth: 25),
+                          icon: const Icon(FontAwesomeIcons.x),
+                          onPressed: () {
+                            Navigator.maybePop(context);
+                          },
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 7.5),
+                      child: TextField(
+                        readOnly: true,
+                        controller: deadlineController,
+                        onTap: () { deadlineOnChange(taskList); },
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.calendar_today),
+                          enabledBorder: const OutlineInputBorder( borderSide: BorderSide.none ),
+                          errorText: errorText
+                        ),
                       ),
                     ),
-                    IconButton(
-                      key: _iconKey,
-                      iconSize: 25,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(maxWidth: 25),
-                      icon: const Icon(FontAwesomeIcons.x),
-                      onPressed: () {
-                        Navigator.maybePop(context);
-                      },
-                    )
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        children: [
+                          const Text("Completed",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                            )
+                          ),
+                          Checkbox(
+                            value: completed,
+                            onChanged: (value) { completedOnChange(value, taskList); },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7.5),
-                  child: TextField(
-                    readOnly: true,
-                    controller: deadlineController,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.calendar_today),
-                      enabledBorder: const OutlineInputBorder( borderSide: BorderSide.none ),
-                      errorText: errorText
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton
+                        .styleFrom(
+                          backgroundColor: colorScheme.error
+                        ),
+                      onPressed: () { onDelete(taskList); },
+                      child: Text("DELETE",
+                        style: TextStyle(
+                          color: colorScheme.onError
+                        ),
+                      )
                     ),
-                    onTap: () { deadlineOnChange(taskList); },
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 7.5),
-                //   child: DropdownButton<String>(
-                //     value: category,
-                //     onChanged: (String? category) { categoryOnChange(category, taskList); },
-                //     items: categories
-                //       .map(
-                //         (taskCategory) =>
-                //           DropdownMenuItem(
-                //             value: taskCategory,
-                //             child: Text(taskCategory),
-                //           )
-                //       )
-                //       .toList(),
-                //   ),
-                // ),
+                    const SizedBox(width: 30,),
+                    ElevatedButton(
+                      style: ElevatedButton
+                        .styleFrom(
+                          backgroundColor: colorScheme.secondary
+                        ),
+                      onPressed: () {},
+                      child: Text("SAVE",
+                        style: TextStyle(
+                          color: colorScheme.onSecondary
+                        ),
+                      )
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -173,14 +205,11 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
   // Functions
   void nameOnChange(String value, TaskList taskList) {
+
     setState(() {
       name = value;
     });
 
-    taskList.setTask(
-      widget.task
-        .setName(value)
-    );
   }
 
   void deadlineOnChange(TaskList taskList) async {
@@ -194,33 +223,43 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
     if (newDeadline != null) {
       setState(() {
-        deadline = newDeadline
+        deadline = newDeadline;
+        deadlineStr = newDeadline
           .toString()
           .split(" ")[0];
       });
-
-      taskList
-        .setTask(
-          widget.task.setDeadline(newDeadline)
-        );
     }
 
   }
+  void completedOnChange(bool? value, TaskList taskList) {
 
-  // void categoryOnChange(String? value, TaskList taskList) {
-  //   if (value != null && value.isNotEmpty) {
-  //     setState(() {
-  //       category = value;
-  //     });
-      
-  //     taskList.setTask(
-  //       widget.task
-  //         .setCategory(category)
-  //     );
-  //   }
-  //   else {
-  //     errorText = "Please enter task category";
-  //   }
-  // }
+    setState(() {
+      completed = value ?? false;
+    });
+
+  }
+
+  void onDelete(TaskList taskList) {
+
+    taskList.deleteTask(widget.task.id);
+
+    Navigator.of(context).maybePop();
+
+  }
+
+  void onSave(TaskList taskList) {
+
+    taskList.setTask(
+      Task(
+        id: widget.task.id,
+        name: name,
+        deadline: deadline,
+        completed: completed
+      )
+    );
+
+    Navigator.of(context).maybePop();
+
+  }
 
 }

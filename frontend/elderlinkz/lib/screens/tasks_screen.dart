@@ -78,9 +78,12 @@ class _TasksScreenState extends State<TasksScreen> {
                 (task) =>
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      return ListTile(
-                        title: Text(task.name),
-                        onTap: () { editTask(taskList, task); }
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: ListTile(
+                          title: Text(task.name),
+                          onTap: () { editTask(taskList, task); }
+                        ),
                       );
                     }
                   )
