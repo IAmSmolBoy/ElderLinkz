@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from paho.mqtt.client import MQTTMessage
+from time import sleep
 
 from connections.mqtt import connect_mqtt
 # from connections.sql import connect_sql
@@ -18,7 +19,8 @@ TOPICS = [
     "HAPP",
     "OXY",
     # "heart",
-    "HUMI"
+    "HUMI",
+    'RSSI'
 ] # simulation topics (If you have more values add here)
 
 # MQTT variables
@@ -36,25 +38,19 @@ CONNECTION_STR = (
 
 # OPCUA variables
 OPCUA_ENDPOINT = os.getenv('OPCUA_ENDPOINT')
-print(OPCUA_ENDPOINT)
-NODEIDS = [
-    { 'name': 'temperature','nodeId': 'ns=2;i=2' },
-    { 'name': 'gsr','nodeId': 'ns=2;i=3' },
-    { 'name': 'oxygen','nodeId': 'ns=2;i=4' },
-    # { 'name': 'heart','nodeId': 'ns=2;i=5' },
-    { 'name': 'humidity','nodeId': 'ns=2;i=6' },
-]
+# print(OPCUA_ENDPOINT)
+NODEIDS = {
+    'TMP': 'ns=2;i=2',
+    'HAPP': 'ns=2;i=3',
+    'OXY': 'ns=2;i=4',
+    # 'heart': 'ns=2;i=5,
+    'HUMI': 'ns=2;i=5',
+    'RSSI': 'ns=2;i=6',
+}
 
 # HTTP variables
 httpEndpoint = os.getenv('HTTP_ENDPOINT')
 
-# globals = open("../globals.txt", "r+")
-# globalsList = globals.read().split("\n")
-
-# for var in globalsList:
-#     varName, val = var.split(": ")
-#     if varName == "ip":
-#         httpEndpoint = f"http://{val}:3000"
 
 
 
@@ -70,15 +66,20 @@ if __name__ == '__main__':
 
     # Setting http endpoint
     http = Http(httpEndpoint)
+    # http = Http("http://172.24.32.1:3000")
     # http = Http("http://192.168.1.73:3000")
 
     # connect to OPCUA
     for i in range(5):
         try:
             opcuaClient = connect_opcua(OPCUA_ENDPOINT)
+            break
 
-        except:
+        except Exception as e:
+            http.get(f'/{e}')
             print("OPCUA Connection Refused")
+
+            sleep(1)
 
     # Get cursor to execute SQL queries
     # sql = sqlConnection.cursor()
@@ -95,10 +96,11 @@ if __name__ == '__main__':
 
         # Adds into data variable
         data[topic] = payload
-
-        # http.get(f'/elderlinkz/{topic}/{payload}')
+                    
+        http.get(f'/test/{topic}-{payload}')
         
-        if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data):
+        if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data and "RSSI" in data):
+
             try:
                 # sql.execute(f"INSERT INTO readings ({','.join(data.keys())})"
                 #             f"VALUES ({','.join(data.values())});")
@@ -106,16 +108,26 @@ if __name__ == '__main__':
 
                 if enableHttp:
                     # Send data to http web server
-                    http.post('/elderlinkz/data', data).json()
+                    http.post('/elderlinkz/data', data)
 
                 # Update opcua values
-                for nodeId in NODEIDS:
-                    var = opcuaClient.get_node(nodeId['nodeId'])
+                for name in data.keys():
 
-                    var.set_value(data[nodeId['name']])
-                    print(var.get_value())
+                    if data[name] != "nan":
 
-            except:
+                        # opcuaClient.get_root_node().get_children()
+
+                        # http.get(f'/test2/{str(opcuaClient.get_root_node().get_children())}')
+
+                        var = opcuaClient.get_node(NODEIDS[name])
+                        # http.get(f'/test2/{name}')
+
+                        var.set_value(float(data[name]))
+                        # http.get(f'/test3/{name}')
+
+            except Exception as e:
+                http.get(f'/{e}')
+                # http.get(f'/test/{data}')
                 print("Something went wrong")
 
             # print(data)

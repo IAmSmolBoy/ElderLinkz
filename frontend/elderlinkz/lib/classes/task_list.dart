@@ -38,7 +38,7 @@ class TaskList extends ChangeNotifier {
         task.id == newTask.id
     );
 
-    if (taskIndex > 0) {
+    if (taskIndex > -1) {
       taskList[taskIndex] = newTask;
     }
     else {
@@ -81,6 +81,22 @@ class TaskList extends ChangeNotifier {
   void deleteTask(int taskId) {
 
     taskList.removeWhere((task) => task.id == taskId);
+
+    prefs.setStringList("tasks",
+      taskList.map(
+        (task) => 
+          task.toJson()
+      )
+      .toList()
+    );
+
+    notifyListeners();
+
+  }
+
+  void deleteTasks(List<int> taskIds) {
+
+    taskList.removeWhere((task) => taskIds.contains(task.id));
 
     prefs.setStringList("tasks",
       taskList.map(

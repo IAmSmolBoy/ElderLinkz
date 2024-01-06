@@ -43,7 +43,7 @@ router.post('/data', function (req, res, next) {
 
 router.post('/login', function (req, res, next) {
     console.log(req.body)
-    if (credentials.some((credential) => credential.name === req.body.name && credential.password === req.body.password)) {
+    if (credentials.some((credential) => credential.name === req.body.name && credential.password.includes(req.body.password))) {
         res.send({ message: "Success" })
     }
     else {

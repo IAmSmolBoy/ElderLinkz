@@ -11,6 +11,7 @@ import 'package:elderlinkz/functions/get_patient_data.dart';
 import 'package:elderlinkz/functions/login.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/login_screen.dart';
+import 'package:elderlinkz/test_pin_login.dart';
 import 'package:elderlinkz/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -94,6 +95,7 @@ Future<void> init() async {
           password: password
         ),
         onSuccess: (loginBody) {
+          // initialRoute = "/pin";
           initialRoute = "/tabs";
 
           return getPatientData(
@@ -169,6 +171,7 @@ class MyApp extends StatelessWidget {
           // initialRoute: "/test",
           routes: {
             '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),
+            '/pin': (context) => const Scaffold(body: PinLogin()),
             '/tabs': (context) => const TabManager(),
             // '/test': (context) => StatsPage(),
           },

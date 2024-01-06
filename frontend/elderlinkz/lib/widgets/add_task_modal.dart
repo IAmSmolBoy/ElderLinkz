@@ -139,6 +139,8 @@ class _AddTaskModalState extends State<AddTaskModal> {
                           ),
                           Checkbox(
                             value: completed,
+                            checkColor: colorScheme.surface,
+                            activeColor: colorScheme.onSurface,
                             onChanged: (value) { completedOnChange(value, taskList); },
                           ),
                         ],
@@ -150,11 +152,11 @@ class _AddTaskModalState extends State<AddTaskModal> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
+                      onPressed: () { onDelete(taskList); },
                       style: ElevatedButton
                         .styleFrom(
                           backgroundColor: colorScheme.error
                         ),
-                      onPressed: () { onDelete(taskList); },
                       child: Text("DELETE",
                         style: TextStyle(
                           color: colorScheme.onError
@@ -163,11 +165,11 @@ class _AddTaskModalState extends State<AddTaskModal> {
                     ),
                     const SizedBox(width: 30,),
                     ElevatedButton(
+                      onPressed: () { onSave(taskList); },
                       style: ElevatedButton
                         .styleFrom(
                           backgroundColor: colorScheme.secondary
                         ),
-                      onPressed: () {},
                       child: Text("SAVE",
                         style: TextStyle(
                           color: colorScheme.onSecondary
@@ -257,6 +259,8 @@ class _AddTaskModalState extends State<AddTaskModal> {
         completed: completed
       )
     );
+
+    // debugPrint(taskList.taskList.map((e) => e.toJson()).toString());
 
     Navigator.of(context).maybePop();
 

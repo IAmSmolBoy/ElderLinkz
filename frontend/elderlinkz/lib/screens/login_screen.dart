@@ -28,13 +28,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  Map<String, String> mockUsers = {
-    'dribbble@gmail.com': '12345',
-    'hunter@gmail.com': 'hunter',
-    'near.huscarl@gmail.com': 'subscribe to pewdiepie',
-    '@.com': '.',
-  };
  
   // Get Http client
   late Http httpClient;
@@ -69,22 +62,16 @@ class _LoginScreenState extends State<LoginScreen> {
       children: [
         FlutterLogin(
           userType: LoginUserType.name,
-          navigateBackAfterRecovery: true,
+          hideForgotPasswordButton: true,
           logo: const AssetImage('assets/images/Elderlinkz Logo.png'),
           theme: LoginTheme(
             primaryColor: colorScheme.background,
-            cardTheme: CardTheme(
-              color: colorScheme.surface
-            ),
-            titleStyle: TextStyle(
-              color: colorScheme.onSurface
-            ),
-            buttonTheme: LoginButtonTheme(
-              backgroundColor: colorScheme.primary,
-            ),
+            cardTheme: CardTheme(color: colorScheme.surface),
+            titleStyle: TextStyle(color: colorScheme.onSurface),
+            buttonTheme: LoginButtonTheme(backgroundColor: colorScheme.primary,),
             inputTheme: InputDecorationTheme(
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: colorScheme.primary, width: 1),
+                borderSide: BorderSide(color: colorScheme.onBackground, width: 1),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
               enabledBorder: OutlineInputBorder(
@@ -128,8 +115,6 @@ class _LoginScreenState extends State<LoginScreen> {
             debugPrint('Recover password info');
             debugPrint('Name: $email');
             return;
-            // return _recoverPassword(email);
-            // Show new password dialog
           },
           userValidator: (value) =>
             value?.isEmpty ?? true ?
@@ -174,6 +159,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class FadePageRoute<T> extends MaterialPageRoute<T> {
   FadePageRoute({

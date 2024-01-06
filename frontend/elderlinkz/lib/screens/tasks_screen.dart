@@ -4,14 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TasksScreen extends StatefulWidget {
-  const TasksScreen({
-    super.key,
-    // required this.category,
-    // required this.tasks
-  });
-
-  // final String category;
-  // final List<Task> tasks;
+  const TasksScreen({ super.key, });
 
   @override
   State<TasksScreen> createState() => _TasksScreenState();
@@ -20,8 +13,7 @@ class TasksScreen extends StatefulWidget {
 class _TasksScreenState extends State<TasksScreen> {
 
   bool showCompletedTasks = false;
-
-  // List<String> categories = [];
+  List<int> selected = [];
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +37,19 @@ class _TasksScreenState extends State<TasksScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
+            // if (selected.isNotEmpty)
+            //   Container(
+            //     width: screenSize.width,
+            //     color: colorScheme.surface,
+            //     child: Row(
+            //       children: [
+            //         IconButton(
+            //           icon: Icon(Icons.delete),
+            //           onPressed: () {  },
+            //         )
+            //       ],
+            //     ),
+            //   ),
             // Uncompleted Task List Section
             Padding(
               padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
@@ -59,15 +64,28 @@ class _TasksScreenState extends State<TasksScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () { addTask(taskList); },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
                       shape: const CircleBorder()
                     ),
-                    child: Icon(Icons.add,
-                      // size: 30,
-                      color: colorScheme.onBackground,
-                    ),
+                    onPressed: () {
+                      if (selected.isEmpty) {
+                        addTask(taskList);
+                      }
+                      else {
+                        taskList.deleteTasks(selected);
+
+                        selected.clear();
+                      }
+                    },
+                    child:
+                      selected.isEmpty ?
+                        Icon(Icons.add,
+                          color: colorScheme.onBackground,
+                        ) :
+                        Icon(Icons.delete,
+                          color: colorScheme.onBackground,
+                        ),
                   )
                 ],
               ),
@@ -76,48 +94,88 @@ class _TasksScreenState extends State<TasksScreen> {
               .where((task) => !task.completed)
               .map(
                 (task) =>
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: ListTile(
-                          title: Text(task.name),
-                          onTap: () { editTask(taskList, task); }
-                        ),
-                      );
-                    }
-                  )
+                  taskListTile(taskList, task, colorScheme)
               ),
     
             // Completed Task Section
             if (completedTasks.isNotEmpty)
-              ListTile(
-                onTap: toggleCompletedTasks,
-                title: const Text("Completed Tasks"),
-                trailing: Icon(
-                  showCompletedTasks ?
-                    Icons.arrow_drop_down :
-                    Icons.arrow_drop_up
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: ListTile(
+                  onTap: toggleCompletedTasks,
+                  title: const Text("Completed Tasks"),
+                  trailing: Icon(
+                    showCompletedTasks ?
+                      Icons.arrow_drop_up :
+                      Icons.arrow_drop_down
+                  ),
                 ),
               ),
             if (showCompletedTasks)
               ...completedTasks
                 .map(
                   (task) =>
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return ListTile(
-                          title: Text(task.name),
-    
-                        );
-                      }
-                    )
+                    taskListTile(taskList, task, colorScheme)
                 )
           ]
         ),
       ),
     );
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // taskListTile
+
+  Widget taskListTile(TaskList taskList, Task task, ColorScheme colorScheme) =>
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: ListTile(
+        selected: selected.contains(task.id),
+        selectedColor: colorScheme.onSurface,
+        selectedTileColor: colorScheme.secondary.withOpacity(.1),
+        onLongPress: () { toggleSelectTask(task.id); },
+        title: Text(task.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+        ),
+        subtitle: Text(task.deadline.toString().split(" ")[0],
+          style: const TextStyle(
+            fontSize: 10
+          ),
+        ),
+        onTap: selected.isEmpty ?
+          () { openSetTaskModal(task); } :
+          () { toggleSelectTask(task.id); },
+        leading:
+          selected.isNotEmpty ?
+            Checkbox(
+              value: selected.contains(task.id),
+              checkColor: colorScheme.surface,
+              activeColor: colorScheme.onSurface,
+              onChanged: (value) { toggleSelectTask(task.id); },
+            ) :
+            null,
+        trailing: Checkbox(
+          value: task.completed,
+          checkColor: colorScheme.surface,
+          activeColor: colorScheme.onSurface,
+          onChanged: (value) { setCompleted(taskList, task); },
+        ),
+      ),
+    );
 
 
 
@@ -166,9 +224,31 @@ class _TasksScreenState extends State<TasksScreen> {
 
   }
 
-  void editTask(TaskList taskList, Task task) {
+  void toggleSelectTask(int id) {
+
+    setState(() {
+
+      if (selected.contains(id)) {
+        selected.remove(id);
+      }
+      else {
+        selected.add(id);
+      }
+
+    });
+
+  }
+
+  void setCompleted(TaskList taskList, Task task) {
     
-    openSetTaskModal(task);
+    taskList.setTask(
+      Task(
+        id: task.id,
+        name: task.name,
+        deadline: task.deadline,
+        completed: !task.completed
+      )
+    );
 
   }
 }

@@ -1,4 +1,4 @@
-from opcua import Client, Node
+from opcua import Client
 
 def connect_opcua(endpoint):
     client: Client = Client(endpoint)
