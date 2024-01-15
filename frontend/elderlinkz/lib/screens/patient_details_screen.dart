@@ -1,3 +1,4 @@
+import 'package:elderlinkz/classes/grid_data.dart';
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
@@ -147,12 +148,42 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                                       _tabController.animateTo(0);
                                     },
                                     sectionWidgets: [
+<<<<<<< HEAD
+                                      TileData(
+                                        title: "NRIC",
+                                        value: _patient.ic,
+                                      ),
+
+                                      Tile()
+
+                                      // StaggeredGridTile.extent(
+                                      //   crossAxisCellCount: 2,
+                                      //   mainAxisExtent: (screenSize.width - 60 - 30) / 4,
+                                      //   child: 
+                                      // ),
+
+                                      // ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
+                                      // ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
+                                      // ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
+                                      // ...displayValueWidget("Gender", _patient.gender, textColor: colorScheme.onSecondary),
+                                      // ...displayValueWidget("Age", _patient.age.toString(), textColor: colorScheme.onSecondary),
+                                      // ...displayValueWidget("Date Of Birth",
+                                      //   textColor: colorScheme.onSecondary,
+                                      //   _patient.dateOfBirth
+                                      //     .toString()
+                                      //     .split(" ")[0]
+                                      //     .split("-")
+                                      //     .reversed
+                                      //     .join("/"),
+                                      // ),
+=======
                                       ...displayValueWidget("Ward", _patient.ward.toString(), textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("Heart Rate", _patient.heartRate.toStringAsFixed(2), textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("Temperature", _patient.temperature.toStringAsFixed(2), textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("Humidity", _patient.humidity.toStringAsFixed(2), textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("Oxygen", _patient.oxygen.toStringAsFixed(2), textColor: colorScheme.onSecondary),
                                       ...displayValueWidget("GSR", _patient.gsr.toStringAsFixed(2), textColor: colorScheme.onSecondary),
+>>>>>>> parent of c5a44f9e (Machine Learning Algorithms and WIP Patient Details Screen)
                                     ]
                                   ),
                                 ]

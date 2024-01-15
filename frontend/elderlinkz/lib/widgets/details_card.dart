@@ -85,7 +85,61 @@ class DetailsCard extends StatelessWidget {
                           color: colorScheme.onSecondary,
                         ),
                       ),
+<<<<<<< HEAD
+                      SizedBox(
+                        height: screenSize.height * .6 - 60,
+                        child: StaggeredGrid.extent(
+                          // crossAxisCount: 4,
+                          mainAxisSpacing: 4,
+                          crossAxisSpacing: 4,
+                          axisDirection: AxisDirection.right,
+                          maxCrossAxisExtent: (screenSize.width - 60 - (rightArrow ? 30 : 0) - (leftArrow ? 30 : 0)),
+                          children: tiles
+                            .map(
+                              (tile) =>
+                                StaggeredGridTile
+                                  .extent(
+                                    crossAxisCellCount: tile.crossAxisCellCount ?? 1,
+                                    mainAxisExtent: (screenSize.width - 60 - 30) / 4 * (tile.mainAxisCellCount ?? 1),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.onSecondary,
+                                        borderRadius: BorderRadius.circular(10)
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          Positioned(
+                                            top: 10,
+                                            left: 10,
+                                            child: Text(tile.title ?? "",
+                                              style: TextStyle(
+                                                color: colorScheme.background
+                                              ),
+                                            )
+                                          ),
+                                          Center(
+                                            child: CircleAvatar(
+                                              backgroundColor: colorScheme.onSecondary,
+                                              foregroundColor: colorScheme.background,
+                                              child: Text(tile.value ?? ""),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ),
+                            )
+                            .toList()
+                        ),
+                        // child: Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //   children: sectionWidgets,
+                        // ),+
+                      )
+=======
                       ...sectionWidgets
+>>>>>>> parent of c5a44f9e (Machine Learning Algorithms and WIP Patient Details Screen)
                     ],
                   ),
                 ),
