@@ -1,11 +1,13 @@
+import 'package:elderlinkz/classes/tile_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DetailsCard extends StatelessWidget {
   const DetailsCard({
     super.key,
     required this.sectionTitle,
-    required this.sectionWidgets,
+    required this.tiles,
     this.leftArrow = false,
     this.rightArrow = false,
     this.toPersonalTab,
@@ -13,7 +15,7 @@ class DetailsCard extends StatelessWidget {
   });
 
   final String sectionTitle;
-  final List<Widget> sectionWidgets;
+  final List<TileData> tiles;
   final bool leftArrow, rightArrow;
   final void Function()? toHealthTab, toPersonalTab;
   
@@ -85,7 +87,6 @@ class DetailsCard extends StatelessWidget {
                           color: colorScheme.onSecondary,
                         ),
                       ),
-<<<<<<< HEAD
                       SizedBox(
                         height: screenSize.height * .6 - 60,
                         child: StaggeredGrid.extent(
@@ -99,8 +100,8 @@ class DetailsCard extends StatelessWidget {
                               (tile) =>
                                 StaggeredGridTile
                                   .extent(
-                                    crossAxisCellCount: tile.crossAxisCellCount ?? 1,
-                                    mainAxisExtent: (screenSize.width - 60 - 30) / 4 * (tile.mainAxisCellCount ?? 1),
+                                    crossAxisCellCount: tile.crossAxisCellCount,
+                                    mainAxisExtent: (screenSize.width - 60 - 30) / 4 * (tile.mainAxisCellCount),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         color: colorScheme.onSecondary,
@@ -137,9 +138,6 @@ class DetailsCard extends StatelessWidget {
                         //   children: sectionWidgets,
                         // ),+
                       )
-=======
-                      ...sectionWidgets
->>>>>>> parent of c5a44f9e (Machine Learning Algorithms and WIP Patient Details Screen)
                     ],
                   ),
                 ),

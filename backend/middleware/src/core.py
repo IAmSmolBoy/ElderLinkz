@@ -1,7 +1,10 @@
 import os
 from dotenv import load_dotenv
+import joblib
 from paho.mqtt.client import MQTTMessage
 from time import sleep
+
+import pandas as pd
 
 from connections.mqtt import connect_mqtt
 # from connections.sql import connect_sql
@@ -99,12 +102,22 @@ if __name__ == '__main__':
                     
         http.get(f'/test/{topic}-{payload}')
         
-        if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data and "RSSI" in data):
+        if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data):
 
             try:
                 # sql.execute(f"INSERT INTO readings ({','.join(data.keys())})"
                 #             f"VALUES ({','.join(data.values())});")
                 # sqlConnection.commit()
+
+                if "OXY" in data:
+                    status: int = joblib.load('/middleware/src/models/sickness_MLPC_GS.pkl').predict(
+                        pd.DataFrame({
+                            'body temperature': [36],
+                            'SpO2': [95]
+                        })
+                    )[0]
+
+                    # http.get(f'/elderlinkz/{status}')
 
                 if enableHttp:
                     # Send data to http web server
@@ -126,7 +139,7 @@ if __name__ == '__main__':
                         # http.get(f'/test3/{name}')
 
             except Exception as e:
-                http.get(f'/{e}')
+                http.get(f'/mqttError/{e}')
                 # http.get(f'/test/{data}')
                 print("Something went wrong")
 
