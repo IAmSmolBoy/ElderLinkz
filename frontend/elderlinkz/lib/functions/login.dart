@@ -24,7 +24,7 @@ Future<String?> login({
     );
     // Map<String, dynamic> loginBody = { "message": "Success" };
       
-    if (onSuccess != null) {
+    if (onSuccess != null && loginBody["message"] == "Success") {
     // if (loginBody.containsKey("message") && loginBody["message"] == "Success" && onSuccess != null) {
       return onSuccess(loginBody);
     }

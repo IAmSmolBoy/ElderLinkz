@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:elderlinkz/classes/colors.dart';
+import 'package:elderlinkz/classes/floor_plan.dart';
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
@@ -144,14 +145,17 @@ class MyApp extends StatelessWidget {
     //   prefs.setString("tasks", json.encode({ "Tasks": [] }));
     // }
 
+    debugPrint(initialRoute);
+
     List<String>? taskListJson = prefs.getStringList("tasks");
     final taskList = TaskList.fromStringList(taskListJson ?? []);
 
     return MultiProvider(
       providers: [
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
-        ChangeNotifierProvider( create: (context) => PatientList(patientList: patients), ),
+        ChangeNotifierProvider( create: (context) => FloorPlanModel(), ),
         ChangeNotifierProvider( create: (context) => TaskList(taskList: taskList), ),
+        ChangeNotifierProvider( create: (context) => PatientList(patientList: patients), ),
         ChangeNotifierProvider( create: (context) => SocketAddress(socketAddress: prefs.getString("socketAddress") ?? dotenv.env['SOCKET_ADDRESS'] ?? "10.0.2.2:3000"), ),
         ChangeNotifierProvider(
           create: (context) => ThemeProvider(

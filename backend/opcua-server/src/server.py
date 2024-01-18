@@ -13,6 +13,7 @@ VARIABLES = [
     # "heart",
     "humidity",
     "RSSI",
+    "status",
 ]
 
 # Connect to OPCUA

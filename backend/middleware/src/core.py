@@ -49,6 +49,7 @@ NODEIDS = {
     # 'heart': 'ns=2;i=5,
     'HUMI': 'ns=2;i=5',
     'RSSI': 'ns=2;i=6',
+    "status": "ns=2;i=7",
 }
 
 # HTTP variables
@@ -117,7 +118,9 @@ if __name__ == '__main__':
                         })
                     )[0]
 
-                    # http.get(f'/elderlinkz/{status}')
+                    data["status"] = status
+
+                    http.get(f'/status/{status}')
 
                 if enableHttp:
                     # Send data to http web server

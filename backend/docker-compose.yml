@@ -9,26 +9,26 @@ services:
   #   ports:
   #     - 1433:1433
 
-  mqtt-broker:
-    image: eclipse-mosquitto
-    ports:
-      - "1883:1883"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config:rw
-      - ./mosquitto/data:/mosquitto/data:rw
-      - ./mosquitto/log:/mosquitto/log:rw
+  # mqtt-broker:
+  #   image: eclipse-mosquitto
+  #   ports:
+  #     - "1883:1883"
+  #   volumes:
+  #     - ./mosquitto/config:/mosquitto/config:rw
+  #     - ./mosquitto/data:/mosquitto/data:rw
+  #     - ./mosquitto/log:/mosquitto/log:rw
 
-  simulated-data:
-    build: 
-      context: ./test
-      dockerfile: Dockerfile
-    image: abigteapot/elderlinkz/simulated-data
-    mem_limit: 1024mb
-    volumes:
-      - ./test:/test
-    env_file: test/.env
-    depends_on:
-      - mqtt-broker
+  # simulated-data:
+  #   build: 
+  #     context: ./test
+  #     dockerfile: Dockerfile
+  #   image: abigteapot/elderlinkz/simulated-data
+  #   mem_limit: 1024mb
+  #   volumes:
+  #     - ./test:/test
+  #   env_file: test/.env
+    # depends_on:
+    #   - mqtt-broker
 
   web:
     build:
@@ -63,4 +63,4 @@ services:
     depends_on:
       - web
       - opcua-server
-      - mqtt-broker
+      # - mqtt-broker

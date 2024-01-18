@@ -1,6 +1,7 @@
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
+import 'package:elderlinkz/classes/tile_data.dart';
 import 'package:elderlinkz/widgets/details_card.dart';
 import 'package:elderlinkz/widgets/layout.dart';
 
@@ -124,6 +125,22 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                                       _tabController.animateTo(1);
                                     },
                                     tiles: [
+                                      TileData(
+                                        crossAxisCellCount: 2,
+                                        mainAxisCellCount: 2
+                                      ),
+                                      TileData(
+                                        crossAxisCellCount: 2,
+                                        mainAxisCellCount: 2
+                                      ),
+                                      TileData(
+                                        crossAxisCellCount: 2,
+                                        mainAxisCellCount: 2
+                                      ),
+                                      TileData(
+                                        crossAxisCellCount: 2,
+                                        mainAxisCellCount: 2
+                                      ),
                                       // ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
                                       // ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
                                       // ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
