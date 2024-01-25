@@ -5,7 +5,7 @@ import 'package:elderlinkz/classes/screen_data.dart';
 import 'package:elderlinkz/globals.dart';
 // import 'package:elderlinkz/screens/analytics_screen.dart';
 import 'package:elderlinkz/screens/home.dart';
-import 'package:elderlinkz/screens/patients_screen.dart';
+import 'package:elderlinkz/screens/alerts_screen.dart';
 import 'package:elderlinkz/screens/search_screen.dart';
 import 'package:elderlinkz/screens/tasks_screen.dart';
 import 'package:elderlinkz/widgets/layout.dart';
@@ -23,7 +23,8 @@ class _TabManagerState extends State<TabManager> with SingleTickerProviderStateM
   int currentIndex = 0;
   List<ScreenData> tabs = [
     ScreenData(title: "Welcome, ${json.decode(prefs.getString('credentials') ?? '{}')['name']}", screen: const Home(),),
-    const ScreenData(title: "Patients", screen: PatientsScreen(),),
+    const ScreenData(title: "Alerts", screen: AlertsScreen(),),
+    // const ScreenData(title: "Patients", screen: PatientsScreen(),),
     // const ScreenData(title: "Analytics", screen: AnalyticsScreen(),),
     const ScreenData(title: "Tasks", screen: TasksScreen(),),
     const ScreenData(title: "Search", screen: SearchScreen())

@@ -101,7 +101,7 @@ if __name__ == '__main__':
         # Adds into data variable
         data[topic] = payload
                     
-        http.get(f'/test/{topic}-{payload}')
+        # http.get(f'/test/{topic}-{payload}')
         
         if len(data.keys()) == len(TOPICS) or ("TMP" in data and "HAPP" in data and "HUMI" in data):
 
@@ -113,14 +113,14 @@ if __name__ == '__main__':
                 if "OXY" in data:
                     status: int = joblib.load('/middleware/src/models/sickness_MLPC_GS.pkl').predict(
                         pd.DataFrame({
-                            'body temperature': [36],
-                            'SpO2': [95]
+                            'body temperature': [data["TMP"]],
+                            'SpO2': [data["OXY"]]
                         })
                     )[0]
 
                     data["status"] = status
 
-                    http.get(f'/status/{status}')
+                    # http.get(f'/status/{status}')
 
                 if enableHttp:
                     # Send data to http web server

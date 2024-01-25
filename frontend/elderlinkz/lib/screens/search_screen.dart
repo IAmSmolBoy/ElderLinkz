@@ -36,12 +36,11 @@ class _SearchScreenState extends State<SearchScreen> {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     // Original ward list
-    List<Patient> patients = context.read<PatientList>().patientList;
+    List<Patient> patients = context.watch<PatientList>().patientList;
+    // List<Patient> patients = [];
 
     // If nothing is in the searchbar, results show all patients
-    if (query == "") {
-      results = categorisePatients(patients);
-    }
+    if (query == "") { results = categorisePatients(patients); }
     else {
       // Filters all patients with names that contain the query (Case Insensitive)
       List<Patient> filteredList = patients
@@ -115,20 +114,30 @@ class _SearchScreenState extends State<SearchScreen> {
 
 
 
+
+
+
+
+
+
+
+
 // -------------------------------------------------------------------- Functions --------------------------------------------------------------------
 // Sort Patients into different lists
 Map<int, List<Patient>> categorisePatients(List<Patient> patients) {
+
   Map<int, List<Patient>> results = {};
 
   for (Patient patient in patients) {
-    if (results[patient.ward] == null) {
-      results[patient.ward] = [];
-    }
+    
+    if (results[patient.ward] == null) { results[patient.ward] = []; }
 
     results[patient.ward]!.add(patient);
+    
   }
 
   return results;
+
 }
 
 // Generate the results of the query and returns a list of the widgets in the results
@@ -139,57 +148,61 @@ List<Widget> generateListTiles({
    required BuildContext context
 }) {
   return results
-    .map((index, result) {
-      return MapEntry(
-        index,
-        [
-          Center(
-            child: Text("Ward $index",
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20
+    .map(
+      (index, result) =>
+        MapEntry(
+          index,
+          [
+            Center(
+              child: Text("Ward $index",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20
+                ),
               ),
             ),
-          ),
-          Column(
-            children: results[index]
-              !.map((patient) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  tileColor: tileColor,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(100))),
-                  leading: CircleAvatar(
-                    radius: 25,
-                    backgroundColor: avatarColor
-                  ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("${patient.name} (Ward ${patient.ward})",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            Column(
+              children: results[index]
+                !.map(
+                  (patient) =>
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        tileColor: tileColor,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(100))),
+                        leading: CircleAvatar(
+                          radius: 25,
+                          backgroundColor: avatarColor
+                        ),
+                        onTap: () {
+                          Navigator.push(context,
+                            PageTransition(
+                              type: PageTransitionType.rightToLeft,
+                              child: PatientDetailsScreen(patient: patient,),
+                            ),
+                          );
+                        },
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("${patient.name} (Ward ${patient.ward})",
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                            Text("IC No.: ${patient.ic} Age: ${patient.age}",
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
                       ),
-                      Text("IC No.: ${patient.ic} Age: ${patient.age}",
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(context,
-                      PageTransition(
-                        type: PageTransitionType.rightToLeft,
-                        child: PatientDetailsScreen(patient: patient,),
-                      ),
-                    );
-                  },
-                ),
-              ))
-              .toList(),
-          ),
-          const SizedBox(height: 10,)
-        ]
-      );
-    }).values
+                    )
+                )
+                .toList(),
+            ),
+            const SizedBox(height: 10,)
+          ]
+        )
+    ).values
     .expand((e) => e) // Flatten list from 3d to 2d
     .toList();
 }

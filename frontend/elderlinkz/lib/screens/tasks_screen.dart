@@ -26,7 +26,10 @@ class _TasksScreenState extends State<TasksScreen> {
       .watch<TaskList>().taskList;
 
     List<Task> completedTasks = tasks
-      .where((task) => task.completed)
+      .where(
+        (task) =>
+          task.completed
+      )
       .toList();
 
     // debugPrint(taskList.toJson());
@@ -37,26 +40,15 @@ class _TasksScreenState extends State<TasksScreen> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // if (selected.isNotEmpty)
-            //   Container(
-            //     width: screenSize.width,
-            //     color: colorScheme.surface,
-            //     child: Row(
-            //       children: [
-            //         IconButton(
-            //           icon: Icon(Icons.delete),
-            //           onPressed: () {  },
-            //         )
-            //       ],
-            //     ),
-            //   ),
-            // Uncompleted Task List Section
             Padding(
-              padding: const EdgeInsets.only(top: 30, left: 30, right: 30),
+              padding: const EdgeInsets.only(
+                top: 30,
+                left: 30,
+                right: 30
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Text(widget.category,
                   const Text("Tasks",
                     style: TextStyle(
                       fontSize: 30,
@@ -64,37 +56,28 @@ class _TasksScreenState extends State<TasksScreen> {
                     ),
                   ),
                   ElevatedButton(
+                    onPressed: () { addDelete(taskList); },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
                       shape: const CircleBorder()
                     ),
-                    onPressed: () {
-                      if (selected.isEmpty) {
-                        addTask(taskList);
-                      }
-                      else {
-                        taskList.deleteTasks(selected);
-
-                        selected.clear();
-                      }
-                    },
                     child:
                       selected.isEmpty ?
-                        Icon(Icons.add,
-                          color: colorScheme.onBackground,
-                        ) :
-                        Icon(Icons.delete,
-                          color: colorScheme.onBackground,
-                        ),
+                        Icon(Icons.add, color: colorScheme.onBackground,) :
+                        Icon(Icons.delete, color: colorScheme.onBackground,),
                   )
                 ],
               ),
             ),
             ...tasks
-              .where((task) => !task.completed)
+              .where((task) => task.completed)
               .map(
                 (task) =>
-                  taskListTile(taskList, task, colorScheme)
+                  taskListTile(
+                    taskList,
+                    task,
+                    colorScheme
+                  )
               ),
     
             // Completed Task Section
@@ -115,7 +98,11 @@ class _TasksScreenState extends State<TasksScreen> {
               ...completedTasks
                 .map(
                   (task) =>
-                    taskListTile(taskList, task, colorScheme)
+                    taskListTile(
+                      taskList,
+                      task,
+                      colorScheme
+                    )
                 )
           ]
         ),
@@ -191,6 +178,16 @@ class _TasksScreenState extends State<TasksScreen> {
 
 
   // OnTap Functions
+
+  // Add Delete Button OnTap
+  void addDelete(TaskList taskList) {
+    if (selected.isEmpty) { addTask(taskList); }
+    else {
+      taskList.deleteTasks(selected);
+
+      selected.clear();
+    }
+  }
   
   // Show Completed Tasks
   void toggleCompletedTasks() {

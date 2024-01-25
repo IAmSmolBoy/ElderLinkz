@@ -9,10 +9,12 @@ class AppColors {
   static const Color primaryBlack = Color(0xff060d16);
   static const Color primaryPurple = Color(0xff8338ec);
   static const Color primaryGreen = Color(0xff04724d);
+  static const Color primaryLightGreen = Color(0xff06b178);
 
   static const Color secondaryBlue = Color(0xff0000ff);
   static const Color secondaryRed = Color.fromARGB(255, 102, 30, 30);
   static const Color secondaryGreen = Color(0xff2a9d8f);
+  static const Color secondaryDarkGreen = Color(0xff264653);
   
 
 }

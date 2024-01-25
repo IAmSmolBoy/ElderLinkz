@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:elderlinkz/functions/get_patient_data.dart';
+import 'package:elderlinkz/functions/get_patient_info.dart';
 import 'package:elderlinkz/functions/login.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   })
                 );
 
-                return getPatientData(
+                return getPatientInfo(
                   httpClient: httpClient,
                   onSuccess: (patientsBody) => null,
                 );

@@ -1,11 +1,12 @@
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
-import 'package:elderlinkz/classes/socket_address.dart';
-import 'package:elderlinkz/classes/tile_data.dart';
-import 'package:elderlinkz/widgets/details_card.dart';
+import 'package:elderlinkz/widgets/details_widgets.dart';
 import 'package:elderlinkz/widgets/layout.dart';
+import 'package:elderlinkz/widgets/thermometer.dart';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class PatientDetailsScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
   void initState() {
     super.initState();
 
-    _patient = widget.patient;
+    // _patient = widget.patient;
 
     _tabController = TabController(
       initialIndex: 0,
@@ -44,49 +45,20 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     Size screenSize = MediaQuery.of(context).size;
 
-    httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
+    _patient = context
+      .watch<PatientList>().patientList
+      .singleWhere(
+        (patient) =>
+          patient.name == widget.patient.name
+      );
+
+    // httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
 
     return Layout(
         title: widget.patient.name,
         bottomNavbar: false,
         backButton: true,
-        body: StreamBuilder<Map<String, dynamic>>(
-          stream: getData(httpClient),
-          builder: (context, snapshot) {
-    
-            if (snapshot.hasError) {
-              debugPrint("${snapshot.error}");
-
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                ScaffoldMessenger
-                .of(context)
-                .showSnackBar(
-                  SnackBar(
-                    content: Text(snapshot.error.toString())
-                  )
-                );
-              });
-    
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
-            }
-    
-            if (snapshot.connectionState != ConnectionState.active || !snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-    
-            // debugPrint("${snapshot.data}");
-
-            PatientList patientList = context.read<PatientList>();
-
-            int index = patientList.patientList.indexWhere((patient) => patient.name == _patient.name);
-    
-            _patient = patientList.updatePatientData(index, snapshot.data!);
-    
-            return Stack(
+        body: Stack(
               children: [
                 Positioned(
                   width: screenSize.width,
@@ -121,77 +93,16 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                                   DetailsCard(
                                     rightArrow: true,
                                     sectionTitle: "Personal",
-                                    toHealthTab: () {
-                                      _tabController.animateTo(1);
-                                    },
-                                    tiles: [
-                                      TileData(
-                                        crossAxisCellCount: 2,
-                                        mainAxisCellCount: 2
-                                      ),
-                                      TileData(
-                                        crossAxisCellCount: 2,
-                                        mainAxisCellCount: 2
-                                      ),
-                                      TileData(
-                                        crossAxisCellCount: 2,
-                                        mainAxisCellCount: 2
-                                      ),
-                                      TileData(
-                                        crossAxisCellCount: 2,
-                                        mainAxisCellCount: 2
-                                      ),
-                                      // ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Gender", _patient.gender, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Age", _patient.age.toString(), textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Date Of Birth",
-                                      //   _patient.dateOfBirth
-                                      //     .toString()
-                                      //     .split(" ")[0]
-                                      //     .split("-")
-                                      //     .reversed
-                                      //     .join("/"),
-                                      //   textColor: colorScheme.onSecondary
-                                      // ),
-                                    ]
+                                    patient: _patient,
+                                    toNextTab: () { _tabController.animateTo(1); },
+                                    child: TileBody(patient: _patient),
                                   ),
                                   DetailsCard(
                                     leftArrow: true,
                                     sectionTitle: "Health",
-                                    toPersonalTab: () {
-                                      _tabController.animateTo(0);
-                                    },
-                                    tiles: [
-                                      // TileData(
-                                      //   title: "NRIC",
-                                      //   value: _patient.ic,
-                                      // ),
-
-                                      // Tile()
-
-                                      // StaggeredGridTile.extent(
-                                      //   crossAxisCellCount: 2,
-                                      //   mainAxisExtent: (screenSize.width - 60 - 30) / 4,
-                                      //   child: 
-                                      // ),
-
-                                      // ...displayValueWidget("NRIC", _patient.ic, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Race", _patient.race, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Emergency Contact", _patient.emergencyContact, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Gender", _patient.gender, textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Age", _patient.age.toString(), textColor: colorScheme.onSecondary),
-                                      // ...displayValueWidget("Date Of Birth",
-                                      //   textColor: colorScheme.onSecondary,
-                                      //   _patient.dateOfBirth
-                                      //     .toString()
-                                      //     .split(" ")[0]
-                                      //     .split("-")
-                                      //     .reversed
-                                      //     .join("/"),
-                                      // ),
-                                    ]
+                                    patient: _patient,
+                                    toPreviousTab: () { _tabController.animateTo(0); },
+                                    child: ListBody(patient: _patient),
                                   ),
                                 ]
                               ),
@@ -204,9 +115,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
                   ),
                 ),
               ],
-            );
-          }
-        ),
+            ),
       );
   }
 }
@@ -218,43 +127,237 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> with Ticker
 
 
 
-// -------------------------------------------------------------------- Functions --------------------------------------------------------------------
-Stream<Map<String, dynamic>> getData(Http httpClient) async* {
-  while (true) {
-    try {
-      Map<String, dynamic> data = await httpClient.get(path: "/elderlinkz/data");
 
-      if (data.containsKey("error")) {
-        throw data["error"];
-      }
-      else {
-        yield data;
-      }
-    } catch(e) {
 
-      debugPrint("$e");
-      rethrow;
-    }
 
-    await Future.delayed(const Duration(seconds: 1));
+
+
+// -------------------------------------------------------------------- Bodies --------------------------------------------------------------------
+class TileBody extends StatelessWidget {
+
+  const TileBody({
+    super.key,
+    required this.patient
+  });
+
+  final Patient patient;
+
+  @override
+  Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+
+    return SizedBox(
+      height: screenSize.height * .6 - 60,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // debugPrint(constraints.maxHeight.toString());
+          double boxHeight = constraints.maxHeight / 4;
+          double rectangleWidth = constraints.maxWidth - boxHeight;
+
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Column(
+                    children: [
+                      DetailGridTile(
+                        width: rectangleWidth,
+                        height: boxHeight,
+                        title: "NRIC",
+                        value: patient.ic,
+                        icon: FontAwesomeIcons.solidIdCard,
+                      ),
+                      DetailGridTile(
+                        width: rectangleWidth,
+                        height: boxHeight,
+                        title: "Emergency Contact",
+                        value: patient.emergencyContact,
+                        icon: FontAwesomeIcons.phone,
+                      ),
+                      DetailGridTile(
+                        width: rectangleWidth,
+                        height: boxHeight,
+                        title: "Race",
+                        value: patient.race,
+                        icon: FontAwesomeIcons.hand,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      DetailGridTile(
+                        width: boxHeight,
+                        height: boxHeight,
+                        title: "Sex",
+                        value: patient.gender,
+                        icon: FontAwesomeIcons.venusMars,
+                      ),
+                      DetailGridTile(
+                        width: boxHeight,
+                        height: boxHeight,
+                        title: "Age",
+                        value: patient.age.toString(),
+                        icon: FontAwesomeIcons.cakeCandles,
+                      ),
+                      DetailGridTile(
+                        width: boxHeight,
+                        height: boxHeight,
+                        title: "Ward",
+                        value: patient.ward.toString(),
+                        icon: FontAwesomeIcons.bed,
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              DetailGridTile(
+                width: constraints.maxWidth,
+                height: boxHeight,
+                title: "Date Of Birth",
+                value: DateFormat.yMd("en_SG").add_Hms().format(patient.dateOfBirth),
+                icon: FontAwesomeIcons.calendarDay,
+              ),
+            ],
+          );
+        }
+      ),
+    );
+
   }
+  
 }
 
-List<Widget> displayValueWidget(String name, String value, { Color? textColor }) =>
-  [
-    const SizedBox(height: 15,),
-    Text(name,
-      style: TextStyle(
-        fontSize: 15,
-        color: textColor
+class ListBody extends StatelessWidget {
+
+  const ListBody({
+    super.key,
+    required this.patient
+  });
+
+  final Patient patient;
+  final listStyle = const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 15
+  );
+
+  @override
+  Widget build(BuildContext context) {
+
+    Size screenSize = MediaQuery.of(context).size;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    // debugPrint((patient.status == 1).toString());
+
+    return SizedBox(
+      height: screenSize.height * .6 - 60,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+
+          // debugPrint(constraints.maxHeight.toString());
+          double boxHeight = constraints.maxHeight / 5;
+          double rectangleWidth = constraints.maxWidth;
+
+          return Row(
+            children: [
+              Column(
+                children: [
+                  DetailGridTile(
+                    height: boxHeight,
+                    width: rectangleWidth,
+                    child: DetailListTile(
+                      height: boxHeight,
+                      width: rectangleWidth,
+                      titleText: "Temp:\n${patient.temperature.toStringAsFixed(2)}°c",
+                      child: RotatedBox(
+                        quarterTurns: 1,
+                        child: ThermometerWidget(
+                          value: (patient.temperature - 34) / 7,
+                          color: patient.temperature < 37.5 ?
+                            colorScheme.secondary :
+                            colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ),
+                  DetailGridTile(
+                    height: boxHeight,
+                    width: rectangleWidth,
+                    child: DetailListTile(
+                      height: boxHeight,
+                      width: rectangleWidth,
+                      titleText: "GSR:\n${patient.gsr}S",
+                      child: Slider(
+                        min: 0,
+                        max: 40,
+                        value: patient.gsr,
+                        onChanged: (double value) {  },
+                        activeColor: patient.gsr < 35 ?
+                          colorScheme.secondary :
+                          colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  DetailGridTile(
+                    height: boxHeight,
+                    width: rectangleWidth,
+                    child: DetailListTile(
+                      height: boxHeight,
+                      width: rectangleWidth,
+                      titleText: "Oxygen:\n${patient.oxygen}%",
+                      child: Slider(
+                        min: 87,
+                        max: 100,
+                        value: patient.oxygen,
+                        onChanged: (double value) {  },
+                        activeColor: patient.oxygen >= 95 ?
+                          colorScheme.secondary  :
+                          colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  DetailGridTile(
+                    height: boxHeight,
+                    width: rectangleWidth,
+                    child: DetailListTile(
+                      height: boxHeight,
+                      width: rectangleWidth,
+                      titleText: "Humi:\n${patient.humidity}%",
+                      child: Slider(
+                        min: 90,
+                        max: 120,
+                        value: patient.humidity,
+                        onChanged: (double value) {  },
+                        activeColor: patient.gsr < 100 ?
+                          Color.lerp(
+                            colorScheme.onPrimary,
+                            colorScheme.onSurface,
+                            (patient.humidity - 90) / 30
+                          )  :
+                          colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  DetailGridTile(
+                    height: boxHeight,
+                    width: rectangleWidth,
+                    title: "Sick Prediction:",
+                    value: patient.status == 2 ?
+                      "Terminally Ill" :
+                      patient.status == 1 ?
+                        "Sick" :
+                        patient.status == 0 ?
+                          "Healthy" :
+                          null,
+                  ),
+                ],
+              ),
+            ],
+          );
+          
+        }
       ),
-    ),
-    const SizedBox(height: 2,),
-    Text(value,
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: textColor
-      ),
-    ),
-  ];
+    );
+    
+  }
+  
+}

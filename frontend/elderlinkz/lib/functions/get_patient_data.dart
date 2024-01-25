@@ -1,45 +1,45 @@
+// import 'dart:convert';
+
 import 'package:elderlinkz/classes/http.dart';
+import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:flutter/material.dart';
 
-Future<String?> getPatientData({
-  required Http httpClient,
-  String? Function(Map<String, List<Map<String, dynamic>>>)? onSuccess,
-  String? Function(Map<String, dynamic>)? onError,
-  String? Function()? onUnknownError,
-}) async {
+Stream<PatientList> getData(Http httpClient) async* {
+  while (true) {
+    try {
 
-  onUnknownError ??= () => "An error has occurred";
+      Map<String, dynamic> patients = await httpClient.get(path: "/elderlinkz/patients");
+      Map<String, dynamic> data = await httpClient.get(path: "/elderlinkz/data");
 
-  try {
+      // debugPrint("test $data");
 
-    final Map<String, dynamic> patientsBody = await httpClient.get(path: "/elderlinkz/patients",);
+      if (data.containsKey("error")) { throw data["error"]; }
+      else {
 
-    if (patientsBody.containsKey("patients") && onSuccess != null) {
+        List<Patient> patientList = (patients["patients"] as List)
+          .map(
+            (patient) =>
+              Patient
+                .fromMap({
+                  ...patient,
+                  ...data
+                })
+          )
+          .toList();
 
-      // Convert patients list from dynamic to List<Map<String, dynamic>>
-      List<Map<String, dynamic>> patientsList = (patientsBody["patients"] as List)
-        .map((patientData) => patientData as Map<String, dynamic>)
-        .toList();
+        
 
-      Map<String, List<Map<String, dynamic>>> parsedPatientsBody = {
-        "patients": patientsList
-      };
+        yield PatientList(patientList: patientList);
 
-      return onSuccess(parsedPatientsBody);
+      }
+
+    } catch(e) {
+
+      debugPrint("$e");
+      rethrow;
 
     }
-    else if (patientsBody.containsKey("error")) {
-      onError ??= (patientsBody) => patientsBody["error"];
 
-      return onError(patientsBody);
-    }
-    else {
-      return onUnknownError();
-    }
-
-  } catch(e) {
-
-    return onUnknownError();
-
+    await Future.delayed(const Duration(seconds: 1));
   }
-
 }
