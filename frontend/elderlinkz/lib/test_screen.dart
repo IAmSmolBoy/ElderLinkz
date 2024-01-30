@@ -1,4 +1,5 @@
-import 'package:elderlinkz/classes/notifications.dart';
+import 'dart:math';
+
 import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
 
@@ -17,12 +18,10 @@ class TestScreen extends StatelessWidget {
 
             notif
               .showNotification(
-                title: "test",
+                title: "test ${Random().nextInt(20)}",
                 body: "test2",
                 payload: "{test3: test4}"
-              )
-              .then((value) => debugPrint(value.toString()))
-              .catchError((e) => debugPrint(e));
+              );
 
           },
           child: const Text("Test")

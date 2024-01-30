@@ -5,123 +5,127 @@ import 'package:elderlinkz/classes/alerts.dart';
 // import 'package:elderlinkz/functions/get_patient_info.dart';
 // import 'package:elderlinkz/screens/patient_details_screen.dart';
 import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
 // import 'package:grouped_list/grouped_list.dart';
 // import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-class AlertsScreen extends StatelessWidget {
+class AlertsScreen extends StatefulWidget {
+
   const AlertsScreen({ super.key });
+
+  @override
+  State<AlertsScreen> createState() => _AlertsScreenState();
+}
+
+class _AlertsScreenState extends State<AlertsScreen> {
+
+  // final GlobalKey tileKey = GlobalKey();
+
+  // Size tileSize = const Size(0, 0);
 
   @override
   Widget build(BuildContext context) {
 
-    // getPatientData(
-    //   httpClient: Http(socketAddress: context.watch<SocketAddress>().socketAddress),
-    //   onSuccess: (patientBody) {
-    //     context
-    //       .read<PatientList>()
-    //       .setPatientList(
-    //         patientBody["patients"]
-    //           ?.map(
-    //             (patient) =>
-    //               Patient
-    //                 .fromMap(patient)
-    //           )
-    //           .toList() ??
-    //           []
-    //       );
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
+    Size screenSize = MediaQuery.of(context).size;
 
-    //     return null;
-    //   }
-    // );
+    Map<String, Alert> alertList = context
+      .watch<AlertList>().alerts;
 
     return SafeArea(
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(30.0),
-            child: Text("Alerts",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Text("Alerts",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          ...context
-            .read<AlertList>().alertList
-            .map(
-              (e) =>
-                Container(
-                  color: Colors.red,
-                )
-            )
-        ],
+            ...alertList.entries
+              .map(
+                (alertEntry) =>
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 30
+                    ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: screenSize.width - 60,
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 20,
+                              horizontal: 10,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(alertEntry.key,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20
+                                  ),
+                                ),
+                                Text(alertEntry.value.alertMsg,
+                                  style: const TextStyle(fontSize: 15),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: -15,
+                          top: -15,
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: colorScheme.background,
+                              borderRadius: BorderRadius.circular(30)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.error,
+                                  borderRadius: BorderRadius.circular(25)
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("!",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              )
+          ],
+        ),
       ),
-      // child: ListView(
-      //   children: [
-      //     const SizedBox(height: 30),
-      //     const Padding(
-      //       padding: EdgeInsets.symmetric(horizontal: 16),
-      //       child: Text(
-      //         'Patients',
-      //         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      //       ),
-      //     ),
-      //     GroupedListView<Patient, String>(
-      //       shrinkWrap: true,
-      //       elements: context.read<PatientList>().patientList,
-      //       useStickyGroupSeparators: true,
-      //       floatingHeader: true,
-      //       order: GroupedListOrder.ASC,
-      //       groupBy: (element) => element.name.toString().substring(0, 1),
-      //       itemComparator: (item1, item2) =>
-      //         item1.name.compareTo(item2.name),
-      //       groupSeparatorBuilder: (String groupByValue) => SizedBox(
-      //         width: MediaQuery.of(context).size.width,
-      //         child: Padding(
-      //           padding: const EdgeInsets.symmetric(horizontal: 16),
-      //           child: Text(
-      //             groupByValue.substring(0, 1),
-      //             textAlign: TextAlign.right,
-      //             style: const TextStyle(
-      //                 fontWeight: FontWeight.w600, fontSize: 18),
-      //           ),
-      //         ),
-      //       ),
-      //       itemBuilder: (context, Patient patient) {
-      //         return Column(
-      //           children: [
-      //             ListTile(
-      //               onTap: () {
-      //                 Navigator.push(context,
-      //                   PageTransition(
-      //                     type: PageTransitionType.rightToLeft,
-      //                     child: PatientDetailsScreen(patient: patient),
-      //                   )
-      //                 );
-      //               },
-      //               leading: CircleAvatar(
-      //                 radius: 25,
-      //                 backgroundColor: colorScheme.onBackground
-      //               ),
-      //               title: Text(
-      //                 patient.name,
-      //                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-      //               ),
-      //               subtitle: Text('Ward ${patient.ward}'),
-      //             ),
-      //             const Divider(
-      //               indent: 25,
-      //               thickness: 2,
-      //             )
-      //           ],
-      //         );
-      //       },
-      //     ),
-      //     const SizedBox(height: 20),
-      //   ],
-      // ),
     );
   }
 }

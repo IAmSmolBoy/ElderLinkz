@@ -15,8 +15,9 @@ import 'package:elderlinkz/functions/get_patient_info.dart';
 import 'package:elderlinkz/functions/login.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/login_screen.dart';
+// import 'package:elderlinkz/screens/chatgpt_screen.dart';
 // import 'package:elderlinkz/test_pin_login.dart';
-import 'package:elderlinkz/test_screen.dart';
+// import 'package:elderlinkz/test_screen.dart';
 import 'package:elderlinkz/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -41,7 +42,7 @@ PatientList patients = PatientList(patientList: []);
 List<Task> tasks = [];
 
 // Alert Data
-List<Alert> alerts = [];
+Map<String, Alert> alerts = {};
 
 // Themes
 final lightTheme = ThemeData(
@@ -147,6 +148,46 @@ Future<void> init() async {
   }
 }
 
+// Update alerts when data is received
+AlertList updateAlerts(BuildContext context, PatientList patients, AlertList? alertListClass) {
+
+  List<Patient> patientList = patients.patientList;
+
+  alertListClass = alertListClass ?? AlertList(alerts: alerts);
+  Map<String, Alert> alertList = alertListClass.alerts;
+    
+  for (Patient patient in patientList) {
+
+    String notifMsg = "${patient.name} ";
+    List<String> notifList = [];
+
+    if (patient.temperature > 37.5) { notifList.add("has high temperature"); }
+    if (patient.gsr >= 35) { notifList.add("has intense emotional"); }
+    if (patient.oxygen < 95) { notifList.add("is lacking oxygen"); }
+    if (patient.humidity >= 100) { notifList.add("has defacted"); }
+
+    notifMsg += notifList.join(", ");
+    
+    if (
+      !alertList.containsKey(patient.name) ||
+      (
+        notifMsg != "${patient.name} " &&
+        alertList.containsKey(patient.name) &&
+        alertList[patient.name]!.alertMsg != notifMsg
+      )
+    ) {
+
+      alertListClass.addAlert(patient.name, notifMsg);
+      // notif.showNotification(title: patient.name, body: notifMsg);
+
+    }
+
+  }
+
+  return alertListClass;
+
+}
+
 Future<void> main() async {
   // Freeze splash screen during initialisation
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -173,19 +214,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
         ChangeNotifierProvider( create: (context) => FloorPlanModel(), ),
         ChangeNotifierProvider( create: (context) => TaskList(taskList: tasks), ),
-        ChangeNotifierProvider( create: (context) => AlertList(alertList: alerts), ),
+        ChangeNotifierProvider( create: (context) => AlertList(alerts: alerts), ),
         // ChangeNotifierProvider( create: (context) => PatientList(patientList: patients), ),
-        StreamProvider<PatientList>
-          .value(
-            value: getData(httpClient),
-            initialData: patients,
-            updateShouldNotify: (previous, current) => true,
-            catchError: (context, error) {
-              debugPrint(error.toString());
-
-              return PatientList(patientList: []); 
-            },
-          ),
         ChangeNotifierProvider(
           create: (context) => SocketAddress(
             socketAddress: prefs.getString("socketAddress") ??
@@ -200,6 +230,17 @@ class MyApp extends StatelessWidget {
               ThemeMode.dark
           ),
         ),
+        StreamProvider<PatientList>
+          .value(
+            value: getData(httpClient),
+            initialData: patients,
+            updateShouldNotify: (previous, current) => true,
+            catchError: (context, error) => PatientList(patientList: []),
+          ),
+        ListenableProxyProvider<PatientList, AlertList>(
+          create: (context) => AlertList(alerts: alerts),
+          update: updateAlerts,
+        )
       ],
       builder: (context, child) {
 
@@ -209,8 +250,8 @@ class MyApp extends StatelessWidget {
           theme: lightTheme,
           darkTheme: darkTheme,
         
-          home: TestScreen(),
-          // initialRoute: initialRoute,
+          // home: const ChatGPTTest(),
+          initialRoute: initialRoute,
           // initialRoute: "/test",
           routes: {
             '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),

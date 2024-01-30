@@ -7,36 +7,28 @@ class NotificationService {
 
   Future<void> init() async {
 
-    // await notificationsPlugin
-    //   .initialize(
-    //     const InitializationSettings(
-    //       android: AndroidInitializationSettings("elderlinkz_icon")
-    //     ),
-    //     onDidReceiveBackgroundNotificationResponse: myBackgroundMessageHandler,
-    //   );
-
     await notificationsPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.requestNotificationsPermission();
     
     const initializationSettingsAndroid = AndroidInitializationSettings('elderlinkz_icon');
     
-    final initializationSettingsDarwin = DarwinInitializationSettings(
-      onDidReceiveLocalNotification: (id, title, body, payload) {
+    // final initializationSettingsDarwin = DarwinInitializationSettings(
+    //   onDidReceiveLocalNotification: (id, title, body, payload) {
 
-        debugPrint("onDidReceiveLocalNotification: id: $id, title: $title, body: $body, payload: $payload");
+    //     debugPrint("onDidReceiveLocalNotification: id: $id, title: $title, body: $body, payload: $payload");
         
-      },
-    );
-    const initializationSettingsLinux = LinuxInitializationSettings(
-      defaultActionName: 'Open notification'
-    );
+    //   },
+    // );
+    // const initializationSettingsLinux = LinuxInitializationSettings(
+    //   defaultActionName: 'Open notification'
+    // );
 
-    final initializationSettings = InitializationSettings(
+    const initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-      macOS: initializationSettingsDarwin,
-      linux: initializationSettingsLinux
+      // iOS: initializationSettingsDarwin,
+      // macOS: initializationSettingsDarwin,
+      // linux: initializationSettingsLinux
     );
     
     await notificationsPlugin
@@ -44,7 +36,15 @@ class NotificationService {
         initializationSettings,
         onDidReceiveNotificationResponse: (details) {
           
-          debugPrint("onDidReceiveNotificationResponse {\nid: ${details.id}\n${details.actionId}\n${details.input}\n${details.payload}\n${details.notificationResponseType}\n}");
+          debugPrint(
+'''onDidReceiveNotificationResponse {
+  id: ${details.id}
+  actionId: ${details.actionId}
+  input: ${details.input}
+  payload: ${details.payload}
+  notificationResponseType: ${details.notificationResponseType}
+}'''
+          );
 
         },
       );
@@ -68,21 +68,26 @@ class NotificationService {
     const androidNotificationDetails = AndroidNotificationDetails(
       'channelId',
       'channelName',
-      channelDescription: 'channelDescription',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker'
+      playSound: false,
+      enableVibration: false,
+      // silent: true,
+      // channelDescription: 'channelDescription',
+      // importance: Importance.max,
+      // priority: Priority.high,
+      // ticker: 'ticker'
     );
 
-    const notificationDetails = NotificationDetails(android: androidNotificationDetails);
+    const notificationDetails = NotificationDetails(
+      android: androidNotificationDetails
+    );
 
     await notificationsPlugin
       .show(
         0,
-        'title',
-        'body',
+        title,
+        body,
         notificationDetails,
-        payload: 'payload'
+        payload: payload
       );
 
   }

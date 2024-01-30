@@ -27,8 +27,6 @@ Stream<PatientList> getData(Http httpClient) async* {
           )
           .toList();
 
-        
-
         yield PatientList(patientList: patientList);
 
       }

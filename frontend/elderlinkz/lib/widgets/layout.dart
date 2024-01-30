@@ -1,6 +1,7 @@
 import 'package:elderlinkz/classes/navbar_selected.dart';
 import 'package:elderlinkz/globals.dart';
-import 'package:elderlinkz/screens/chat_screen.dart';
+// import 'package:elderlinkz/screens/chat_screen.dart';
+import 'package:elderlinkz/screens/chatgpt_screen.dart';
 import 'package:elderlinkz/widgets/bottom_navbar.dart';
 import 'package:elderlinkz/widgets/top_navbar.dart';
 import 'package:flutter/material.dart';
@@ -57,12 +58,15 @@ class _LayoutState extends State<Layout> with SingleTickerProviderStateMixin {
         FloatingActionButton(
           backgroundColor: colorScheme.primary,
           onPressed: () {
+            
             Navigator.push(context,
               PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: const ChatScreen(),
+                // child: const ChatScreen(),
+                child: const ChatGPTScreen(),
               )
             );
+            
           },
           shape: const CircleBorder(),
           child: const Icon(

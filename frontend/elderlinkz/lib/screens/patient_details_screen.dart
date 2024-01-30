@@ -327,7 +327,7 @@ class ListBody extends StatelessWidget {
                         max: 120,
                         value: patient.humidity,
                         onChanged: (double value) {  },
-                        activeColor: patient.gsr < 100 ?
+                        activeColor: patient.humidity < 100 ?
                           Color.lerp(
                             colorScheme.onPrimary,
                             colorScheme.onSurface,
