@@ -104,13 +104,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
                                   color: colorScheme.error,
                                   borderRadius: BorderRadius.circular(25)
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text("!",
                                       style: TextStyle(
+                                        fontSize: 15,
+                                        color: colorScheme.onError,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 15
                                       ),
                                     ),
                                   ],

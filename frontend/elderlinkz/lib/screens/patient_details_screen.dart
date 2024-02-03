@@ -271,7 +271,9 @@ class ListBody extends StatelessWidget {
                       child: RotatedBox(
                         quarterTurns: 1,
                         child: ThermometerWidget(
-                          value: (patient.temperature - 34) / 7,
+                          value: patient.temperature > 0 ?
+                            (patient.temperature - 20) / 20 :
+                            0,
                           color: patient.temperature < 37.5 ?
                             colorScheme.secondary :
                             colorScheme.error,
@@ -288,7 +290,7 @@ class ListBody extends StatelessWidget {
                       titleText: "GSR:\n${patient.gsr}S",
                       child: Slider(
                         min: 0,
-                        max: 40,
+                        max: 4000,
                         value: patient.gsr,
                         onChanged: (double value) {  },
                         activeColor: patient.gsr < 35 ?
@@ -305,7 +307,9 @@ class ListBody extends StatelessWidget {
                       width: rectangleWidth,
                       titleText: "Oxygen:\n${patient.oxygen}%",
                       child: Slider(
-                        min: 87,
+                        min: patient.oxygen > 0.0 ?
+                          87 :
+                          -999,
                         max: 100,
                         value: patient.oxygen,
                         onChanged: (double value) {  },
@@ -323,8 +327,8 @@ class ListBody extends StatelessWidget {
                       width: rectangleWidth,
                       titleText: "Humi:\n${patient.humidity}%",
                       child: Slider(
-                        min: 90,
-                        max: 120,
+                        min: 50,
+                        max: 100,
                         value: patient.humidity,
                         onChanged: (double value) {  },
                         activeColor: patient.humidity < 100 ?

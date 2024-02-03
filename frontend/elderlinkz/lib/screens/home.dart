@@ -12,10 +12,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  final kFloorSize = const Size(600, 400);
-  final kRegalMinSize = const Size(10, 10);
-  final kRegalMaxSize = const Size(200, 200);
-
   @override
   Widget build(BuildContext context) {
 
@@ -29,26 +25,26 @@ class _HomeState extends State<Home> {
           alignment: Alignment.center,
           children: <Widget>[
             const FloorPlanWidget(),
-            if (!model.hasTouched) IgnorePointer(
+            if (!model.touched) IgnorePointer(
               ignoring: true,
               child: Container(
                 color: colorScheme.surface.withOpacity(0.85),
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Icon(
                         Icons.touch_app,
-                        color: Colors.white,
+                        color: colorScheme.onSurface,
                         size: 40.0,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10.0,
                       ),
                       Text(
                         'Start by dragging with your fingers',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: colorScheme.onSurface),
                       )
                     ],
                   ),

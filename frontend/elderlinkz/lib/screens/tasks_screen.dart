@@ -17,8 +17,10 @@ class _TasksScreenState extends State<TasksScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     Size screenSize = MediaQuery.of(context).size;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+
     TaskList taskList = context
       .read<TaskList>();
 
@@ -70,7 +72,7 @@ class _TasksScreenState extends State<TasksScreen> {
               ),
             ),
             ...tasks
-              .where((task) => task.completed)
+              .where((task) => !task.completed)
               .map(
                 (task) =>
                   taskListTile(
@@ -108,6 +110,7 @@ class _TasksScreenState extends State<TasksScreen> {
         ),
       ),
     );
+
   }
 
 
@@ -181,42 +184,50 @@ class _TasksScreenState extends State<TasksScreen> {
 
   // Add Delete Button OnTap
   void addDelete(TaskList taskList) {
+
     if (selected.isEmpty) { addTask(taskList); }
     else {
-      taskList.deleteTasks(selected);
 
+      taskList.deleteTasks(selected);
       selected.clear();
+
     }
+
   }
   
   // Show Completed Tasks
   void toggleCompletedTasks() {
+
     setState(() {
+
       showCompletedTasks = !showCompletedTasks;
+
     });
+
   }
   
   // Open SetTask Modal
-  openSetTaskModal(Task task) {
+  Future<void> openSetTaskModal(Task task) async {
+    
     showDialog(
       context: context,
       builder:
         (context) =>
-          AddTaskModal(
-            task: task
-          )
+          AddTaskModal(task: task)
     );
+    
   }
 
   void addTask(TaskList taskList) {
     
     openSetTaskModal(
-      taskList.addTask(
-        name: 'New Task',
-        // category: 'Tasks',
-        deadline: DateTime.now(),
-        completed: false
-      )
+      taskList
+        .addTask(
+          name: 'New Task',
+          // category: 'Tasks',
+          deadline: DateTime.now(),
+          completed: false
+        )
     );
 
   }
@@ -225,12 +236,8 @@ class _TasksScreenState extends State<TasksScreen> {
 
     setState(() {
 
-      if (selected.contains(id)) {
-        selected.remove(id);
-      }
-      else {
-        selected.add(id);
-      }
+      if (selected.contains(id)) { selected.remove(id); }
+      else { selected.add(id); }
 
     });
 
@@ -238,14 +245,15 @@ class _TasksScreenState extends State<TasksScreen> {
 
   void setCompleted(TaskList taskList, Task task) {
     
-    taskList.setTask(
-      Task(
-        id: task.id,
-        name: task.name,
-        deadline: task.deadline,
-        completed: !task.completed
-      )
-    );
+    taskList
+      .setTask(
+        Task(
+          id: task.id,
+          name: task.name,
+          deadline: task.deadline,
+          completed: !task.completed
+        )
+      );
 
   }
 }

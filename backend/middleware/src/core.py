@@ -110,11 +110,14 @@ if __name__ == '__main__':
                 #             f"VALUES ({','.join(data.values())});")
                 # sqlConnection.commit()
 
-                if "OXY" in data:
+                oxygenVal: float = opcuaClient.get_node("ns=2;i=4").get_value()
+
+                if "OXY" in data or oxygenVal != None:
+
                     status: int = joblib.load('/middleware/src/models/sickness_MLPC_GS.pkl').predict(
                         pd.DataFrame({
-                            'body temperature': [data["TMP"]],
-                            'SpO2': [data["OXY"]]
+                            'body temperature': [ data["TMP"] ],
+                            'SpO2': [ data["OXY"] if "OXY" in data else oxygenVal ]
                         })
                     )[0]
 

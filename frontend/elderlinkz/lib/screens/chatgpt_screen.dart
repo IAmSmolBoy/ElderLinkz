@@ -1,3 +1,4 @@
+import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/widgets/layout.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/scheduler.dart';
@@ -16,7 +17,6 @@ class _ChatGPTScreenState extends State<ChatGPTScreen> {
   // final focusNode = FocusNode();
   // Size buttonSize = const Size(50, 50);
 
-  late WebViewController controller;
   // Color onBackground = Colors.white;
   // Color background = Colors.black;
 

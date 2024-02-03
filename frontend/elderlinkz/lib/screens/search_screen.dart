@@ -61,9 +61,13 @@ class _SearchScreenState extends State<SearchScreen> {
       SearchField(
         controller: textEditingController,
         onChanged: (String newQuery) {
+
           setState(() {
+
             query = newQuery;
+
           });
+
         },
       ),
       SizedBox(
@@ -171,10 +175,22 @@ List<Widget> generateListTiles({
                         tileColor: tileColor,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(100))),
-                        leading: CircleAvatar(
-                          radius: 25,
-                          backgroundColor: avatarColor
+                        leading: Container(
+                          width: 45,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: avatarColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Icon(Icons.person,
+                            size: 25,
+                            color: tileColor,
+                          ),
                         ),
+                        // leading: CircleAvatar(
+                        //   radius: 25,
+                        //   backgroundColor: avatarColor
+                        // ),
                         onTap: () {
                           Navigator.push(context,
                             PageTransition(

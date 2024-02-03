@@ -59,12 +59,12 @@ client = connect_mqtt()
 
 while True:
 
-    client.publish("TMP", random.random() * 5 + 35)
+    client.publish("TMP", random.random() * 15 + 25)
     client.publish("HAPP", random.randint(0, 40))
     if random.random() > .6:
         client.publish("OXY", random.randint(87, 100))
     # client.publish("heart", random.randint(60, 180))
-    client.publish("HUMI", random.randint(90, 120))
+    client.publish("HUMI", random.randint(50, 100))
     # print("publish")
     
     time.sleep(1)

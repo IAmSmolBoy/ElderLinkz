@@ -216,40 +216,66 @@ class _AddTaskModalState extends State<AddTaskModal> {
 
   void deadlineOnChange(TaskList taskList) async {
 
+    ThemeData currentTheme = Theme
+      .of(context);
+    
+    ColorScheme colorScheme = currentTheme.colorScheme;
+
     DateTime? newDeadline = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime(2100)
+      lastDate: DateTime(2100),
+      builder: (context, child) =>
+        Theme(
+          data: currentTheme
+            .copyWith(
+              colorScheme: currentTheme.colorScheme
+                .copyWith(
+                  primary: colorScheme.secondary,
+                  onPrimary: colorScheme.onSecondary
+                ),
+            ),
+          child: child ??
+            Container()
+        ),
     );
 
     if (newDeadline != null) {
+      
       setState(() {
+        
         deadline = newDeadline;
         deadlineStr = newDeadline
           .toString()
           .split(" ")[0];
+          
       });
+      
     }
 
   }
-  void completedOnChange(bool? value, TaskList taskList) {
-
-    setState(() {
-      completed = value ?? false;
-    });
-
-  }
+  void completedOnChange(bool? value, TaskList taskList) { setState(() { completed = value ?? false; }); }
 
   void onDelete(TaskList taskList) {
 
-    taskList.deleteTask(widget.task.id);
+    taskList
+      .deleteTask(widget.task.id);
 
-    Navigator.of(context).maybePop();
+    Navigator
+      .of(context)
+      .maybePop();
 
   }
 
   void onSave(TaskList taskList) {
+
+    // debugPrint(Task(
+    //     id: widget.task.id,
+    //     name: name,
+    //     deadline: deadline,
+    //     completed: completed
+    //   ).toJson());
 
     taskList.setTask(
       Task(

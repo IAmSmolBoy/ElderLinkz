@@ -18,47 +18,45 @@ class _FloorPlanWidgetState extends State<FloorPlanWidget> {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     final Size size = MediaQuery.of(context).size;
     final model = Provider.of<FloorPlanModel>(context);
+
     final gestures = {
       DragAndScale: GestureRecognizerFactoryWithHandlers<DragAndScale>(
         () => DragAndScale(),
         (DragAndScale instance) {
           instance
-            ..onStart = (details) {
-              model.handleDragScaleStart(details);
-            }
-            ..onUpdate = (details) {
-              model.handleDragScaleUpdate(details);
-            }
-            ..onEnd = (_) {
-              model.handleDragScaleEnd();
-            };
+            ..onStart = (details) { model.handleDragScaleStart(details); }
+            ..onUpdate = (details) { model.handleDragScaleUpdate(details); }
+            ..onEnd = (_) { model.handleDragScaleEnd(); };
         },
       )
     };
 
-    final AlignmentGeometry alignment = FractionalOffset.fromOffsetAndRect(
-      Offset(
-        size.width / 2.0,
-        size.height / 2.0,
-      ),
-      Rect.fromLTRB(
-        0.0,
-        0.0,
-        size.width,
-        size.height,
-      ),
-    );
+    final AlignmentGeometry alignment = FractionalOffset
+      .fromOffsetAndRect(
+        Offset(
+          size.width / 2,
+          size.height / 2,
+        ),
+        Rect
+          .fromLTRB(
+            0.0,
+            0.0,
+            size.width,
+            size.height,
+          ),
+      );
 
-    final Matrix4 transform = Matrix4.diagonal3(
-      Vector3(
-        model.scale,
-        model.scale,
-        model.scale,
-      ),
-    )..translate(
-      model.pos.x,
-      model.pos.y,
-    );
+    final Matrix4 transform = Matrix4
+      .diagonal3(
+        Vector3(
+          model.scale,
+          model.scale,
+          model.scale,
+        ),
+      )..translate(
+        model.pos.x,
+        model.pos.y,
+      );
     
     return RawGestureDetector(
       gestures: gestures,
@@ -91,11 +89,6 @@ class _FloorPlanWidgetState extends State<FloorPlanWidget> {
                                 children: <Widget>[
                                   CircleAvatar(
                                     radius: 5.0,
-                                    // backgroundColor: tileLights[idx].status == 0 ?
-                                    //   colorScheme.background :
-                                    //   tileLights[idx].status == 1 ?
-                                    //     colorScheme.error :
-                                    //     colorScheme.secondary,
                                     child: Center(
                                       child: Icon(
                                         Icons.elderly,
@@ -107,12 +100,12 @@ class _FloorPlanWidgetState extends State<FloorPlanWidget> {
                                   Transform(
                                     transform: Matrix4
                                       .identity()
-                                      ..translate(18.0),
+                                      ..translate(10.0),
                                     child: Text(
                                       wardData[idx].name.toString(),
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 6.0,
-                                        color: Colors.white,
+                                        color: colorScheme.primary,
                                       ),
                                     ),
                                   )
@@ -154,8 +147,9 @@ class RemoveScrollGlow extends ScrollBehavior {
 
   @override
   Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
+      BuildContext context,
+      Widget child,
+      ScrollableDetails details
+    ) => child;
 
 }

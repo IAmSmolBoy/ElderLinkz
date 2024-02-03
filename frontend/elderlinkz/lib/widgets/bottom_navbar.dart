@@ -29,11 +29,18 @@ class _BottomNavbarState extends State<BottomNavbar> {
     ColorScheme colorScheme = theme.colorScheme;
 
     void setSelected(int newIndex) {
-      if (newIndex != tabController.index) {
-        tabController.animateTo(newIndex);
+
+      if (newIndex != 0) {
+
+        tabController
+          .animateTo(newIndex - 1);
+
       }
 
-      context.read<NavbarSelected>().setSelected(newIndex);
+      context
+        .read<NavbarSelected>()
+        .setSelected(newIndex);
+
     }
 
     return AnimatedBottomNavigationBar(

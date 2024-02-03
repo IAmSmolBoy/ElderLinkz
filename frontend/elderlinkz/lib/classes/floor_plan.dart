@@ -53,49 +53,22 @@ final List<Ward> wardData = [
 
 class Pos {
 
-  double x = 0.0;
-  double y = 0.0;
+  double x;
+  double y;
 
   Pos(this.x, this.y);
-
-  static Pos fromMap(Map data) =>
-    Pos(
-      data["x"],
-      data["y"]
-    );
-
-  Map<String, double> toMap(Map data) =>
-    {
-      "x": x,
-      "y": y
-    };
 
 }
 
 class Ward {
 
-  // final String location;
   final int name;
-  // final double status;
   final Pos position;
-  // final int tile;
 
   const Ward({
-    // required this.location,
     required this.name,
-    // required this.status,
     required this.position,
-    // required this.tile,
   });
-
-  static Ward fromMap(Map data) =>
-    Ward(
-      // location: data["location"] ?? 'No location.',
-      name: data["name"] ?? 'No name.',
-      // status: data["status"] ?? 0.0,
-      position: Pos.fromMap(data["position"] ?? { "x": 0, "y": 0 }),
-      // tile: data["tile"] ?? 0
-    );
 
 }
 
@@ -108,45 +81,58 @@ class FloorPlanModel extends ChangeNotifier {
   Pos previousPos = Pos(0.0, 0.0);
   Pos endPos = Pos(0.0, 0.0);
   bool isScaled = false;
-  bool hasTouched = false;
+  bool touched = false;
 
   void handleDragScaleStart(ScaleStartDetails details) {
-    hasTouched = true;
+
+    Offset touchPoint = details.focalPoint;
+
+    touched = true;
     previousScale = scale;
-    previousPos.x = (details.focalPoint.dx / scale) - endPos.x;
-    previousPos.y = (details.focalPoint.dy / scale) - endPos.y;
+    previousPos
+      ..x = (touchPoint.dx / scale) - endPos.x
+      ..y = (touchPoint.dy / scale) - endPos.y;
+
     notifyListeners();
+
   }
 
   void handleDragScaleUpdate(ScaleUpdateDetails details) {
+
     scale = previousScale * details.scale;
     isScaled = scale > 2.0;
 
-    if (scale < 1.0) {
-      scale = 1.0;
-    } else if (scale > 4.0) {
-      scale = 4.0;
-    } else if (previousScale == scale) {
+    if (scale < 1.0) { scale = 1.0; }
+    else if (scale > 4.0) { scale = 4.0; }
+    else if (previousScale == scale) {
+
       pos.x = (details.focalPoint.dx / scale) - previousPos.x;
       pos.y = (details.focalPoint.dy / scale) - previousPos.y;
     }
+
     notifyListeners();
+
   }
 
   void reset() {
+
     scale = 1.0;
     previousScale = 1.0;
     pos = Pos(0.0, 0.0);
     previousPos = Pos(0.0, 0.0);
     endPos = Pos(0.0, 0.0);
     isScaled = false;
+
     notifyListeners();
+
   }
 
   void handleDragScaleEnd() {
+
     previousScale = 1.0;
     endPos = pos;
     notifyListeners();
+
   }
 
 }
