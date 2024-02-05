@@ -1,5 +1,7 @@
 # Elderly Home Care IoT Management System Using Biosensors v2.0
 
+![ElderLinkZ Logo](./frontend/elderlinkz/assets/images/Elderlinkz Logo Original.png)
+
 ### Objective 🎯
 
 This project aims to enhanced the data acquisition system that was developed by the previous MDL MP that monitors the health of the elderly, with collected data integrated into a management dashboard.
