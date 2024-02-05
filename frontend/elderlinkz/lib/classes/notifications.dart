@@ -1,3 +1,4 @@
+import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -68,8 +69,8 @@ class NotificationService {
     const androidNotificationDetails = AndroidNotificationDetails(
       'channelId',
       'channelName',
-      playSound: false,
-      enableVibration: false,
+      // playSound: false,
+      // enableVibration: false,
       // silent: true,
       // channelDescription: 'channelDescription',
       // importance: Importance.max,
@@ -105,5 +106,23 @@ class NotificationService {
     //       )
     //     )
     //   );
+
+}
+
+class SendNotifs extends ChangeNotifier {
+
+  bool sendNotifs;
+
+  SendNotifs({ this.sendNotifs = true });
+
+  void setSendNotifs({ required bool newTheme }) async {
+
+    sendNotifs = newTheme;
+
+    prefs
+      .setBool("sendNotifs", newTheme);
+    notifyListeners();
+
+  }
 
 }

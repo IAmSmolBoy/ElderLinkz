@@ -149,15 +149,6 @@ class _TasksScreenState extends State<TasksScreen> {
         onTap: selected.isEmpty ?
           () { openSetTaskModal(task); } :
           () { toggleSelectTask(task.id); },
-        leading:
-          selected.isNotEmpty ?
-            Checkbox(
-              value: selected.contains(task.id),
-              checkColor: colorScheme.surface,
-              activeColor: colorScheme.onSurface,
-              onChanged: (value) { toggleSelectTask(task.id); },
-            ) :
-            null,
         trailing: Checkbox(
           value: task.completed,
           checkColor: colorScheme.surface,

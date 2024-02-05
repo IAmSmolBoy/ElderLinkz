@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:elderlinkz/functions/get_patient_info.dart';
+
+// import 'package:elderlinkz/functions/get_patient_info.dart';
 import 'package:elderlinkz/functions/login.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
             return login(
               httpClient: httpClient,
               credentials: loginData,
-              onSuccess: (loginBody) {
+              onSuccess: (loginBody) async {
+
                 prefs.setString("credentials",
                   json.encode({
                     "name": loginData.name,
@@ -96,10 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   })
                 );
 
-                return getPatientInfo(
-                  httpClient: httpClient,
-                  onSuccess: (patientsBody) => null,
-                );
+                return null;
+
               },
             );
           },
@@ -145,12 +145,14 @@ class _LoginScreenState extends State<LoginScreen> {
           child: IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
+
               Navigator.push(context,
                 PageTransition(
                   child: const SettingsScreen(loginSettings: true,),
                   type: PageTransitionType.rightToLeft,
                 )
               );
+
             },
           )
         ),

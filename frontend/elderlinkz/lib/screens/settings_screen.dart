@@ -1,6 +1,8 @@
 import 'package:elderlinkz/classes/http.dart';
+import 'package:elderlinkz/classes/notifications.dart';
 import 'package:elderlinkz/classes/socket_address.dart';
 import 'package:elderlinkz/classes/theme.dart';
+import 'package:elderlinkz/functions/show_snackbar.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/login_screen.dart';
 import 'package:elderlinkz/screens/settings_form_screen.dart';
@@ -26,15 +28,15 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
 
-  late Http httpClient;
-
   @override
   Widget build(BuildContext context) {
 
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     String currIp = context.watch<SocketAddress>().socketAddress;
+    Http? httpClient;
 
-    httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress);
+    try { httpClient = Http(socketAddress: context.watch<SocketAddress>().socketAddress); }
+    catch (e) { showSnackBar(context, e.toString()); }
 
     return Layout(
       title: "Settings",
@@ -52,18 +54,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SettingsSection(
             title: const Text('Common'),
             tiles: <SettingsTile>[
-              SettingsTile.switchTile(
-                initialValue: context.watch<ThemeProvider>().themeMode == ThemeMode.light,
-                leading: const Icon(Icons.light_mode),
-                title: const Text('Light Mode'),
-                onToggle: (lightMode) {
-                  context.read<ThemeProvider>().setThemeMode(
-                    newTheme: lightMode ?
-                      ThemeMode.light :
-                      ThemeMode.dark
-                  );
-                },
-              ),
+              SettingsTile
+                .switchTile(
+                  initialValue: context
+                    .watch<ThemeProvider>().themeMode == ThemeMode.light,
+                  leading: const Icon(Icons.light_mode),
+                  title: const Text('Light Mode'),
+                  onToggle: (lightMode) {
+
+                    context
+                      .read<ThemeProvider>()
+                      .setThemeMode(
+                        newTheme: lightMode ?
+                          ThemeMode.light :
+                          ThemeMode.dark
+                      );
+
+                  },
+                ),
+              SettingsTile
+                .switchTile(
+                  initialValue: context
+                    .watch<SendNotifs>().sendNotifs,
+                  leading: const Icon(Icons.notifications),
+                  title: const Text('Notifications'),
+                  onToggle: (lightMode) {
+
+                    context
+                      .read<SendNotifs>()
+                      .setSendNotifs(newTheme: lightMode);
+
+                  },
+                ),
             ],
           ),
           SettingsSection(
@@ -130,35 +152,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       onPressed: () {
-                        try {
-                          httpClient
-                            .get(path: "/elderlinkz/ping")
-                            .then((body) {
-                              ScaffoldMessenger
-                                .of(context)
-                                .showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      body.containsKey("error") ?
-                                        body["error"] :
-                                        body["message"]
-                                    )
-                                  )
-                                );
-                            });
-                        } catch (e) {
-                          debugPrint(e.toString());
 
-                          ScaffoldMessenger
-                            .of(context)
-                            .showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  e.toString()
-                                )
-                              )
-                            );
+                        if (httpClient != null) {
+
+                          try {
+                            httpClient
+                              .get(path: "/elderlinkz/ping")
+                              .then((body) {
+                                ScaffoldMessenger
+                                  .of(context)
+                                  .showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        body.containsKey("error") ?
+                                          body["error"] :
+                                          body["message"]
+                                      )
+                                    )
+                                  );
+                              })
+                              .catchError((e) { showSnackBar(context, e.toString()); });
+                          } catch (e) {
+                            showSnackBar(context, e.toString());
+                          }
+
                         }
+
                       },
                     )
                   ],
