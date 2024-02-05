@@ -2,9 +2,10 @@
 
 import 'package:elderlinkz/classes/http.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
+import 'package:elderlinkz/functions/show_snackbar.dart';
 import 'package:flutter/material.dart';
 
-Stream<PatientList> getData(Http httpClient) async* {
+Stream<PatientList> getData(BuildContext context, Http httpClient) async* {
   while (true) {
     try {
 
@@ -34,7 +35,7 @@ Stream<PatientList> getData(Http httpClient) async* {
     } catch(e) {
 
       debugPrint("$e");
-      rethrow;
+      showSnackBar(context, e.toString());
 
     }
 

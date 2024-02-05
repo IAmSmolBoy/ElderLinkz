@@ -2,7 +2,7 @@ import 'package:elderlinkz/widgets/layout.dart';
 import 'package:flutter/material.dart';
 
 class SettingsFormScreen extends StatefulWidget {
-  SettingsFormScreen({
+  const SettingsFormScreen({
     super.key,
     required this.settingName,
     required this.initialVal,

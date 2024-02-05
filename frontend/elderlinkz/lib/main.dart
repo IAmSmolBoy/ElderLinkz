@@ -11,8 +11,9 @@ import 'package:elderlinkz/classes/task_list.dart';
 import 'package:elderlinkz/classes/theme.dart';
 import 'package:elderlinkz/classes/patient_list.dart';
 import 'package:elderlinkz/functions/get_patient_data.dart';
-import 'package:elderlinkz/functions/get_patient_info.dart';
 import 'package:elderlinkz/functions/login.dart';
+import 'package:elderlinkz/functions/show_snackbar.dart';
+import 'package:elderlinkz/functions/update_alerts.dart';
 import 'package:elderlinkz/globals.dart';
 import 'package:elderlinkz/screens/login_screen.dart';
 // import 'package:elderlinkz/screens/chatgpt_screen.dart';
@@ -40,9 +41,6 @@ PatientList patients = PatientList(patientList: []);
 
 // Tasks
 List<Task> tasks = [];
-
-// Alert Data
-Map<String, Alert> alerts = {};
 
 // Themes
 final lightTheme = ThemeData(
@@ -122,22 +120,11 @@ Future<void> init() async {
           name: name,
           password: password
         ),
-        onSuccess: (loginBody) {
+        onSuccess: (loginBody) async {
 
-          // initialRoute = "/pin";
           initialRoute = "/tabs";
 
-          return getPatientInfo(
-            httpClient: httpClient,
-            onUnknownError: () => "Something went wrong",
-            onSuccess: (patientsBody) {
-
-              patients = PatientList.fromJsonObj(patientsBody);
-
-              return null;
-              
-            },
-          );
+          return null;
 
         },
       );
@@ -146,46 +133,6 @@ Future<void> init() async {
       snackbarMsg = "Saved credentials are invalid";
     }
   }
-}
-
-// Update alerts when data is received
-AlertList updateAlerts(BuildContext context, PatientList patients, AlertList? alertListClass) {
-
-  List<Patient> patientList = patients.patientList;
-
-  alertListClass = alertListClass ?? AlertList(alerts: alerts);
-  Map<String, Alert> alertList = alertListClass.alerts;
-    
-  for (Patient patient in patientList) {
-
-    String notifMsg = "${patient.name} ";
-    List<String> notifList = [];
-
-    if (patient.temperature > 37.5) { notifList.add("has high temperature"); }
-    if (patient.gsr >= 35) { notifList.add("has intense emotional"); }
-    if (patient.oxygen < 95) { notifList.add("is lacking oxygen"); }
-    if (patient.humidity >= 100) { notifList.add("has defacted"); }
-
-    notifMsg += notifList.join(", ");
-    
-    if (
-      !alertList.containsKey(patient.name) ||
-      (
-        notifMsg != "${patient.name} " &&
-        alertList.containsKey(patient.name) &&
-        alertList[patient.name]!.alertMsg != notifMsg
-      )
-    ) {
-
-      alertListClass.addAlert(patient.name, notifMsg);
-      // notif.showNotification(title: patient.name, body: notifMsg);
-
-    }
-
-  }
-
-  return alertListClass;
-
 }
 
 Future<void> main() async {
@@ -214,13 +161,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider( create: (context) => NavbarSelected(), ),
         ChangeNotifierProvider( create: (context) => FloorPlanModel(), ),
         ChangeNotifierProvider( create: (context) => TaskList(taskList: tasks), ),
-        ChangeNotifierProvider( create: (context) => AlertList(alerts: alerts), ),
+        // ChangeNotifierProvider( create: (context) => AlertList(alerts: alerts), ),
         // ChangeNotifierProvider( create: (context) => PatientList(patientList: patients), ),
         ChangeNotifierProvider(
           create: (context) => SocketAddress(
-            socketAddress: prefs.getString("socketAddress") ??
-              dotenv.env['SOCKET_ADDRESS'] ??
-                "10.0.2.2:3000"
+            socketAddress: prefs
+              .getString("socketAddress") ??
+                dotenv.env['SOCKET_ADDRESS'] ??
+                  "10.0.2.2:3000"
           ),
         ),
         ChangeNotifierProvider(
@@ -230,35 +178,60 @@ class MyApp extends StatelessWidget {
               ThemeMode.dark
           ),
         ),
-        StreamProvider<PatientList>
-          .value(
-            value: getData(httpClient),
-            initialData: patients,
-            updateShouldNotify: (previous, current) => true,
-            catchError: (context, error) => PatientList(patientList: []),
+        ChangeNotifierProvider(
+          create: (context) =>  SendNotifs(
+            sendNotifs: prefs
+              .getBool("sendNotifs") ?? true
           ),
-        ListenableProxyProvider<PatientList, AlertList>(
-          create: (context) => AlertList(alerts: alerts),
-          update: updateAlerts,
-        )
+        ),
       ],
       builder: (context, child) {
 
-        return MaterialApp(
-          title: 'Flutter Demo',
-          themeMode: context.watch<ThemeProvider>().themeMode,
-          theme: lightTheme,
-          darkTheme: darkTheme,
-        
-          // home: const ChatGPTTest(),
-          initialRoute: initialRoute,
-          // initialRoute: "/test",
-          routes: {
-            '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),
-            // '/pin': (context) => const Scaffold(body: PinLogin()),
-            '/tabs': (context) => const TabManager(),
-            // '/test': (context) => StatsPage(),
-          },
+        return MultiProvider(
+          providers: [
+            StreamProvider<PatientList>
+              .value(
+                value: getData(
+                  context,
+                  httpClient = Http(
+                    socketAddress: context
+                      .watch<SocketAddress>()
+                      .socketAddress
+                  )
+                ),
+                initialData: patients,
+                updateShouldNotify: (previous, current) => true,
+                catchError: (context, error) {
+
+                  showSnackBar(context, error.toString());
+
+                  return PatientList(patientList: []);
+
+                },
+              ),
+            ListenableProxyProvider<PatientList, AlertList>(
+              create: (context) => AlertList(alerts: {}),
+              update: updateAlerts,
+            )
+          ],
+          builder: (context, snapshot) {
+            return MaterialApp(
+              title: 'Flutter Demo',
+              themeMode: context.watch<ThemeProvider>().themeMode,
+              theme: lightTheme,
+              darkTheme: darkTheme,
+            
+              // home: const ChatGPTTest(),
+              initialRoute: initialRoute,
+              // initialRoute: "/test",
+              routes: {
+                '/login': (context) => Scaffold(body: LoginScreen(snackbarMsg: snackbarMsg,)),
+                // '/pin': (context) => const Scaffold(body: PinLogin()),
+                '/tabs': (context) => const TabManager(),
+                // '/test': (context) => StatsPage(),
+              },
+            );
+          }
         );
 
       },
