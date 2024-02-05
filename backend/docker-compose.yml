@@ -1,0 +1,66 @@
+version: '2.4'
+
+services:
+
+  # ms-sql-server:
+  #   image: mcr.microsoft.com/mssql/server:2022-latest
+  #   environment:
+  #     - ACCEPT_EULA="Y"
+  #   ports:
+  #     - 1433:1433
+
+  mqtt-broker:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:rw
+      - ./mosquitto/data:/mosquitto/data:rw
+      - ./mosquitto/log:/mosquitto/log:rw
+
+  simulated-data:
+    build: 
+      context: ./test
+      dockerfile: Dockerfile
+    image: abigteapot/elderlinkz/simulated-data
+    mem_limit: 1024mb
+    volumes:
+      - ./test:/test
+    env_file: test/.env
+    depends_on:
+      - mqtt-broker
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    image: abigteapot/elderlinkz/web
+    mem_limit: 1024mb
+    ports:
+      - 3000:3000
+
+  opcua-server:
+    build: 
+      context: ./opcua-server
+      dockerfile: Dockerfile
+    image: abigteapot/elderlinkz/opcua-server
+    mem_limit: 1024mb
+    volumes:
+      - ./opcua-server:/opcua-server
+    env_file: opcua-server/.env
+    ports:
+      - 4840:4840
+
+  middleware:
+    build: 
+      context: ./middleware
+      dockerfile: Dockerfile
+    image: abigteapot/elderlinkz/middleware
+    mem_limit: 1024mb
+    volumes:
+      - ./middleware:/middleware
+    env_file: middleware/.env
+    depends_on:
+      - web
+      - opcua-server
+      - mqtt-broker

@@ -1,0 +1,4 @@
+{
+    "discord.enabled": true,
+    "files.autoSave": "onFocusChange"
+}
