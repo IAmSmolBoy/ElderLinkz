@@ -1,6 +1,6 @@
 # Elderly Home Care IoT Management System Using Biosensors v2.0
 
-![ElderLinkZ Logo](./frontend/elderlinkz/assets/images/Elderlinkz Logo Original.png)
+![ElderLinkZ Logo](./frontend/elderlinkz/assets/images/Elderlinkz_Logo_Original.png)
 
 ### Objective 🎯
 
