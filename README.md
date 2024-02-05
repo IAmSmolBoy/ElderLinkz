@@ -5,6 +5,15 @@
 This project aims to enhanced the data acquisition system that was developed by the previous MDL MP that monitors the health of the elderly, with collected data integrated into a management dashboard.
 This will allow healthcare workers to analyze the information quickly and respond to the needs of the patients. This project we plan to show to an elderly home referred by the diploma in biomedical engineering.
 
+### App Features 📱
+
+1. Display patient vitals
+1. Machine learning model to predict health of patient
+1. ChatGPT for nurse enquiries
+1. Task list to track completion of tasks
+1. Floor plan showing ward locations
+1. Search for patient details by name
+
 ### Platforms 🌐
 1. Docker - To containerise my backend application for easy deployment
 1. Jupyter Notebook - For research into AI
