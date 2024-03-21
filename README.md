@@ -9,12 +9,13 @@ This will allow healthcare workers to analyze the information quickly and respon
 
 ### App Features 📱
 
-1. Display patient vitals
+1. Display patient vitals and personal information
 1. Machine learning model to predict health of patient
 1. ChatGPT for nurse enquiries
 1. Task list to track completion of tasks
 1. Floor plan showing ward locations
 1. Search for patient details by name
+1. Alert screen to alert nurses of critical vital signs
 
 ### Platforms 🌐
 1. Docker - To containerise my backend application for easy deployment
